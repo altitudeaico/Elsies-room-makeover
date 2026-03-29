@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Elsie's Room Makeover — HQ</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --purple: #7B5EA7;
+    --purple-light: #C4B0DC;
+    --purple-pale: #F0EAF8;
+    --purple-dark: #4A3470;
+    --gold: #F5A623;
+    --gold-light: #FEF3D7;
+    --teal: #3DBFA0;
+    --teal-light: #D6F5EF;
+    --coral: #F4735A;
+    --coral-light: #FDE8E4;
+    --navy: #2D2B55;
+    --white: #FFFFFF;
+    --off-white: #FAF8FF;
+    --text: #2D2B55;
+    --text-soft: #7B78A8;
+    --border: #E4DDF0;
+    --star: #FFD700;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: var(--off-white);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ── HEADER ── */
+  .hq-header {
+    background: var(--navy);
+    padding: 28px 32px 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hq-header::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: radial-gradient(ellipse at 80% 50%, rgba(123,94,167,0.4) 0%, transparent 65%);
+    pointer-events: none;
+  }
+  .header-stars {
+    position: absolute; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none;
+    overflow: hidden;
+  }
+  .star-dot {
+    position: absolute; background: white; border-radius: 50%;
+    animation: twinkle 3s ease-in-out infinite;
+  }
+  @keyframes twinkle { 0%,100%{opacity:0.2} 50%{opacity:0.9} }
+  .header-inner { position: relative; z-index: 1; max-width: 900px; margin: 0 auto; }
+  .header-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+  .hq-badge {
+    background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 20px; padding: 4px 12px;
+    font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+    text-transform: uppercase; color: rgba(255,255,255,0.8);
+    display: inline-block; margin-bottom: 10px;
+  }
+  .hq-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: 36px; color: white; line-height: 1.1;
+    text-shadow: 0 2px 12px rgba(0,0,0,0.3);
+  }
+  .hq-title span { color: var(--gold); }
+  .hq-sub {
+    color: rgba(255,255,255,0.7); font-size: 14px; margin-top: 6px; font-weight: 600;
+  }
+  .header-xp-block { flex-shrink: 0; min-width: 200px; }
+  .xp-label-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+  .xp-title { color: var(--gold); font-weight: 800; font-size: 13px; }
+  .xp-count { color: white; font-weight: 700; font-size: 13px; }
+  .xp-track { background: rgba(255,255,255,0.15); border-radius: 99px; height: 12px; overflow: hidden; }
+  .xp-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--gold), #FFB347); transition: width 0.6s cubic-bezier(.34,1.56,.64,1); }
+  .xp-stars { display: flex; gap: 4px; margin-top: 8px; justify-content: flex-end; }
+  .xp-star { font-size: 16px; filter: grayscale(1) brightness(1.5); transition: filter 0.4s; }
+  .xp-star.lit { filter: none; }
+
+  /* ── NAV TABS ── */
+  .nav-tabs {
+    background: white; border-bottom: 2px solid var(--border);
+    display: flex; gap: 0; overflow-x: auto;
+    position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 2px 12px rgba(45,43,85,0.07);
+  }
+  .tab-btn {
+    padding: 14px 22px; font-family: 'Nunito', sans-serif;
+    font-size: 13px; font-weight: 700; border: none;
+    background: transparent; color: var(--text-soft);
+    cursor: pointer; white-space: nowrap;
+    border-bottom: 3px solid transparent; margin-bottom: -2px;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .tab-btn.active { color: var(--purple); border-bottom-color: var(--purple); }
+  .tab-btn:hover:not(.active) { color: var(--text); background: var(--purple-pale); }
+  .tab-btn .tab-icon { margin-right: 5px; font-size: 15px; }
+
+  /* ── MAIN ── */
+  .main { max-width: 900px; margin: 0 auto; padding: 24px 20px 60px; }
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  /* ── DASHBOARD ── */
+  .dash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+  .stat-card {
+    background: white; border-radius: 16px;
+    border: 1.5px solid var(--border);
+    padding: 18px 20px;
+  }
+  .stat-card.purple { background: var(--purple-pale); border-color: var(--purple-light); }
+  .stat-card.gold { background: var(--gold-light); border-color: #F0C070; }
+  .stat-card.teal { background: var(--teal-light); border-color: #90DDD0; }
+  .stat-card.coral { background: var(--coral-light); border-color: #F0A898; }
+  .stat-icon { font-size: 28px; margin-bottom: 6px; }
+  .stat-num { font-family: 'Fredoka One', cursive; font-size: 32px; color: var(--text); line-height: 1; }
+  .stat-desc { font-size: 13px; color: var(--text-soft); margin-top: 4px; font-weight: 600; }
+
+  .section-title {
+    font-family: 'Fredoka One', cursive;
+    font-size: 20px; color: var(--purple-dark);
+    margin: 24px 0 12px; display: flex; align-items: center; gap: 8px;
+  }
+  .section-title::after {
+    content: ''; flex: 1; height: 2px;
+    background: var(--border); border-radius: 2px;
+  }
+
+  /* Week progress */
+  .week-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+  .week-card {
+    background: white; border-radius: 16px;
+    border: 1.5px solid var(--border); padding: 18px 20px;
+  }
+  .week-card-title { font-weight: 800; font-size: 15px; margin-bottom: 4px; }
+  .week-card-sub { font-size: 12px; color: var(--text-soft); margin-bottom: 12px; font-weight: 600; }
+  .mini-bar-bg { background: var(--border); border-radius: 99px; height: 8px; overflow: hidden; margin-bottom: 8px; }
+  .mini-bar-fill { height: 100%; border-radius: 99px; transition: width 0.5s; }
+  .mini-bar-fill.w1 { background: var(--purple); }
+  .mini-bar-fill.w2 { background: var(--teal); }
+  .week-count { font-size: 12px; color: var(--text-soft); font-weight: 700; }
+
+  /* Today's tasks */
+  .today-card {
+    background: var(--navy); border-radius: 16px;
+    padding: 20px; margin-bottom: 20px; position: relative; overflow: hidden;
+  }
+  .today-card::before {
+    content: ''; position: absolute;
+    top: -30px; right: -30px; width: 120px; height: 120px;
+    background: rgba(123,94,167,0.3); border-radius: 50%;
+  }
+  .today-label { color: var(--gold); font-weight: 800; font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px; }
+  .today-day-name { color: white; font-family: 'Fredoka One', cursive; font-size: 22px; margin-bottom: 14px; }
+  .today-tasks { display: flex; flex-direction: column; gap: 8px; }
+  .today-task {
+    background: rgba(255,255,255,0.1); border-radius: 10px;
+    padding: 10px 14px; display: flex; align-items: center; gap: 10px;
+    cursor: pointer; transition: background 0.15s;
+  }
+  .today-task:hover { background: rgba(255,255,255,0.18); }
+  .today-task.done { opacity: 0.5; }
+  .today-check { width: 20px; height: 20px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.5); flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+  .today-check.checked { background: var(--gold); border-color: var(--gold); }
+  .today-check.checked::after { content:'✓'; color: var(--navy); font-size: 11px; font-weight: 800; }
+  .today-task-text { color: white; font-size: 13px; font-weight: 600; flex: 1; }
+  .today-task.done .today-task-text { text-decoration: line-through; opacity: 0.7; }
+  .today-who { font-size: 11px; padding: 2px 8px; border-radius: 99px; font-weight: 700; flex-shrink: 0; }
+  .who-e { background: rgba(196,176,220,0.3); color: #E0D0F5; }
+  .who-p { background: rgba(61,191,160,0.3); color: #A0ECD8; }
+  .who-t { background: rgba(245,166,35,0.3); color: #FFD88A; }
+
+  /* Milestones */
+  .milestone-list { display: flex; flex-direction: column; gap: 10px; }
+  .milestone {
+    background: white; border-radius: 14px; border: 1.5px solid var(--border);
+    padding: 14px 16px; display: flex; align-items: center; gap: 12px;
+  }
+  .milestone.done { background: var(--teal-light); border-color: #90DDD0; }
+  .milestone.upcoming { opacity: 0.6; }
+  .milestone-icon { font-size: 24px; width: 40px; text-align: center; flex-shrink: 0; }
+  .milestone-body { flex: 1; }
+  .milestone-name { font-weight: 800; font-size: 14px; }
+  .milestone-day { font-size: 12px; color: var(--text-soft); margin-top: 2px; font-weight: 600; }
+  .milestone-status {
+    font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 99px; flex-shrink: 0;
+  }
+  .milestone.done .milestone-status { background: #3DBFA0; color: white; }
+  .milestone:not(.done):not(.upcoming) .milestone-status { background: var(--gold-light); color: #B07020; }
+  .milestone.upcoming .milestone-status { background: var(--border); color: var(--text-soft); }
+
+  /* ── QUEST BOARD ── */
+  .week-section { margin-bottom: 28px; }
+  .week-banner {
+    background: var(--navy); color: white; border-radius: 14px;
+    padding: 14px 20px; margin-bottom: 14px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .week-banner-title { font-family: 'Fredoka One', cursive; font-size: 20px; }
+  .week-banner-sub { font-size: 12px; color: rgba(255,255,255,0.65); margin-top: 2px; font-weight: 600; }
+  .week-banner-xp { color: var(--gold); font-weight: 800; font-size: 14px; }
+
+  .day-group { margin-bottom: 16px; }
+  .day-heading {
+    font-size: 11px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--text-soft); margin-bottom: 8px; display: flex; align-items: center; gap: 8px;
+  }
+  .day-heading::after { content:''; flex:1; height:1px; background:var(--border); }
+
+  .task-row {
+    background: white; border-radius: 12px; border: 1.5px solid var(--border);
+    padding: 12px 14px; margin-bottom: 6px;
+    display: flex; align-items: flex-start; gap: 12px;
+    cursor: pointer; transition: transform 0.1s, box-shadow 0.1s;
+  }
+  .task-row:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(45,43,85,0.08); }
+  .task-row.done { background: #F8FFF8; border-color: #C0E8C0; }
+  .task-row.boss { border-color: var(--gold); background: var(--gold-light); }
+  .task-row.boss.done { background: #F0F8E8; border-color: #A8D890; }
+  .task-check {
+    width: 24px; height: 24px; border-radius: 50%;
+    border: 2px solid var(--border); flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s; margin-top: 1px;
+  }
+  .task-check.checked { background: var(--purple); border-color: var(--purple); }
+  .task-check.checked::after { content:'✓'; color:white; font-size:12px; font-weight:800; }
+  .task-row.boss .task-check { border-color: var(--gold); }
+  .task-row.boss .task-check.checked { background: var(--gold); border-color: var(--gold); }
+  .task-row.boss .task-check.checked::after { color: var(--navy); }
+  .task-content { flex:1; min-width:0; }
+  .task-text { font-size: 14px; font-weight: 600; line-height: 1.4; color: var(--text); }
+  .task-row.done .task-text { text-decoration: line-through; color: var(--text-soft); }
+  .task-badges { display: flex; gap: 5px; margin-top: 5px; flex-wrap: wrap; align-items: center; }
+  .tbadge { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 99px; }
+  .tbadge-e { background: var(--purple-pale); color: var(--purple-dark); }
+  .tbadge-p { background: var(--teal-light); color: #1A6658; }
+  .tbadge-t { background: var(--gold-light); color: #8A5A10; }
+  .tbadge-xp { background: var(--off-white); color: var(--text-soft); border: 1px solid var(--border); }
+  .tbadge-boss { background: var(--gold); color: var(--navy); }
+
+  /* ── HOW-TO GUIDES ── */
+  .guide-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .guide-card {
+    background: white; border-radius: 16px; border: 1.5px solid var(--border);
+    padding: 20px; cursor: pointer; transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .guide-card:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(45,43,85,0.1); }
+  .guide-icon { font-size: 32px; margin-bottom: 10px; }
+  .guide-title { font-weight: 800; font-size: 15px; margin-bottom: 4px; color: var(--text); }
+  .guide-sub { font-size: 12px; color: var(--text-soft); font-weight: 600; margin-bottom: 12px; }
+  .guide-tags { display: flex; gap: 5px; flex-wrap: wrap; }
+  .guide-tag { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 99px; background: var(--purple-pale); color: var(--purple-dark); }
+
+  .guide-detail { display: none; }
+  .guide-detail.open { display: block; }
+  .guide-full {
+    background: white; border-radius: 16px; border: 1.5px solid var(--border);
+    padding: 24px; margin-top: 16px;
+  }
+  .guide-full-title { font-family: 'Fredoka One', cursive; font-size: 22px; color: var(--purple-dark); margin-bottom: 16px; }
+  .guide-step {
+    display: flex; gap: 12px; margin-bottom: 14px; align-items: flex-start;
+  }
+  .guide-step-num {
+    width: 28px; height: 28px; border-radius: 50%; background: var(--purple);
+    color: white; font-weight: 800; font-size: 13px;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px;
+  }
+  .guide-step-text { font-size: 14px; font-weight: 600; line-height: 1.5; }
+  .guide-tip {
+    background: var(--gold-light); border-left: 3px solid var(--gold);
+    border-radius: 0 10px 10px 0; padding: 12px 16px; margin-top: 12px;
+    font-size: 13px; font-weight: 600;
+  }
+  .guide-tip-label { font-weight: 800; color: #8A5A10; margin-bottom: 2px; }
+  .guide-warning {
+    background: var(--coral-light); border-left: 3px solid var(--coral);
+    border-radius: 0 10px 10px 0; padding: 12px 16px; margin-top: 10px;
+    font-size: 13px; font-weight: 600;
+  }
+  .guide-warning-label { font-weight: 800; color: #8A3020; margin-bottom: 2px; }
+  .back-btn {
+    background: var(--purple-pale); color: var(--purple-dark);
+    border: none; border-radius: 10px; padding: 10px 16px;
+    font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 13px;
+    cursor: pointer; margin-bottom: 16px; display: flex; align-items: center; gap: 6px;
+  }
+  .back-btn:hover { background: var(--purple-light); }
+
+  /* ── SHOPPING LIST ── */
+  .shop-section { margin-bottom: 24px; }
+  .shop-section-title { font-weight: 800; font-size: 16px; margin-bottom: 10px; color: var(--purple-dark); display: flex; align-items: center; gap: 6px; }
+  .shop-item {
+    background: white; border-radius: 12px; border: 1.5px solid var(--border);
+    padding: 12px 16px; margin-bottom: 6px;
+    display: flex; align-items: center; gap: 12px; cursor: pointer;
+  }
+  .shop-item:hover { background: var(--purple-pale); }
+  .shop-check { width: 22px; height: 22px; border-radius: 6px; border: 2px solid var(--border); flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+  .shop-check.checked { background: var(--teal); border-color: var(--teal); }
+  .shop-check.checked::after { content:'✓'; color:white; font-size:12px; font-weight:800; }
+  .shop-name { flex: 1; font-weight: 600; font-size: 14px; }
+  .shop-item.done .shop-name { text-decoration: line-through; color: var(--text-soft); }
+  .shop-note { font-size: 12px; color: var(--text-soft); font-weight: 600; }
+  .shop-priority { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 99px; flex-shrink: 0; }
+  .prio-urgent { background: var(--coral-light); color: #8A3020; }
+  .prio-before { background: var(--gold-light); color: #8A5A10; }
+  .prio-nice { background: var(--purple-pale); color: var(--purple-dark); }
+
+  /* ── ROLES ── */
+  .role-cards { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
+  .role-card {
+    border-radius: 16px; padding: 20px; text-align: center;
+    border: 1.5px solid transparent;
+  }
+  .role-card.elsie { background: var(--purple-pale); border-color: var(--purple-light); }
+  .role-card.parents { background: var(--teal-light); border-color: #90DDD0; }
+  .role-card.emma { background: var(--coral-light); border-color: #F0A898; }
+  .role-avatar { font-size: 40px; margin-bottom: 8px; }
+  .role-name { font-family: 'Fredoka One', cursive; font-size: 18px; margin-bottom: 4px; }
+  .role-card.elsie .role-name { color: var(--purple-dark); }
+  .role-card.parents .role-name { color: #1A6658; }
+  .role-card.emma .role-name { color: #8A3020; }
+  .role-title { font-size: 12px; font-weight: 700; opacity: 0.7; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.06em; }
+  .role-powers { text-align: left; }
+  .role-power { font-size: 13px; font-weight: 600; margin-bottom: 5px; display: flex; align-items: center; gap: 6px; }
+  .role-power::before { content: '★'; font-size: 11px; color: var(--gold); }
+  .role-xp-badge { margin-top: 12px; font-size: 13px; font-weight: 700; padding: 4px 12px; border-radius: 99px; background: rgba(255,255,255,0.7); }
+
+  /* Rules card */
+  .rules-card {
+    background: var(--navy); border-radius: 16px; padding: 24px;
+    margin-top: 20px; color: white;
+  }
+  .rules-title { font-family: 'Fredoka One', cursive; font-size: 22px; color: var(--gold); margin-bottom: 16px; }
+  .rule-item { display: flex; gap: 12px; margin-bottom: 12px; align-items: flex-start; }
+  .rule-num { width: 26px; height: 26px; border-radius: 50%; background: var(--gold); color: var(--navy); font-weight: 800; font-size: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .rule-text { font-size: 14px; font-weight: 600; line-height: 1.4; color: rgba(255,255,255,0.9); }
+
+  @media (max-width: 600px) {
+    .dash-grid { grid-template-columns: 1fr 1fr; }
+    .week-cards { grid-template-columns: 1fr; }
+    .guide-grid { grid-template-columns: 1fr; }
+    .role-cards { grid-template-columns: 1fr; }
+    .hq-title { font-size: 26px; }
+    .header-top { flex-direction: column; }
+    .header-xp-block { width: 100%; }
+    .tab-btn { padding: 12px 14px; font-size: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="hq-header">
+  <div class="header-stars" id="starfield"></div>
+  <div class="header-inner">
+    <div class="header-top">
+      <div>
+        <div class="hq-badge">🏰 Project HQ — Easter 2025</div>
+        <div class="hq-title">Elsie's Room<br><span>Makeover Quest</span></div>
+        <div class="hq-sub">Two weeks · Purple walls · LED magic · The best bedroom ever</div>
+      </div>
+      <div class="header-xp-block">
+        <div class="xp-label-row">
+          <span class="xp-title">⚡ TOTAL XP</span>
+          <span class="xp-count" id="hdr-xp">0 / 198</span>
+        </div>
+        <div class="xp-track"><div class="xp-fill" id="hdr-fill" style="width:0%"></div></div>
+        <div class="xp-stars">
+          <span class="xp-star" id="star1">⭐</span>
+          <span class="xp-star" id="star2">⭐</span>
+          <span class="xp-star" id="star3">⭐</span>
+          <span class="xp-star" id="star4">⭐</span>
+          <span class="xp-star" id="star5">⭐</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- NAV TABS -->
+<div class="nav-tabs">
+  <button class="tab-btn active" onclick="showTab('dashboard')"><span class="tab-icon">🏠</span>Dashboard</button>
+  <button class="tab-btn" onclick="showTab('quest')"><span class="tab-icon">📋</span>Quest Board</button>
+  <button class="tab-btn" onclick="showTab('guides')"><span class="tab-icon">📖</span>How-To Guides</button>
+  <button class="tab-btn" onclick="showTab('shopping')"><span class="tab-icon">🛒</span>Shopping List</button>
+  <button class="tab-btn" onclick="showTab('crew')"><span class="tab-icon">👥</span>The Crew</button>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="main">
+
+  <!-- ── DASHBOARD ── -->
+  <div class="panel active" id="panel-dashboard">
+
+    <div id="today-block"></div>
+
+    <div class="dash-grid">
+      <div class="stat-card purple">
+        <div class="stat-icon">✅</div>
+        <div class="stat-num" id="stat-done">0</div>
+        <div class="stat-desc">tasks completed</div>
+      </div>
+      <div class="stat-card gold">
+        <div class="stat-icon">⚡</div>
+        <div class="stat-num" id="stat-xp">0</div>
+        <div class="stat-desc">XP earned so far</div>
+      </div>
+      <div class="stat-card teal">
+        <div class="stat-icon">🏆</div>
+        <div class="stat-num" id="stat-boss">0/10</div>
+        <div class="stat-desc">boss tasks conquered</div>
+      </div>
+      <div class="stat-card coral">
+        <div class="stat-icon">📅</div>
+        <div class="stat-num" id="stat-days">14</div>
+        <div class="stat-desc">days in the quest</div>
+      </div>
+    </div>
+
+    <div class="week-cards">
+      <div class="week-card">
+        <div class="week-card-title" style="color:var(--purple)">Week 1 — Prep & Build</div>
+        <div class="week-card-sub">Paint, fill, prime & assemble everything</div>
+        <div class="mini-bar-bg"><div class="mini-bar-fill w1" id="w1-bar" style="width:0%"></div></div>
+        <div class="week-count" id="w1-count">0 / 23 tasks done</div>
+      </div>
+      <div class="week-card">
+        <div class="week-card-title" style="color:var(--teal)">Week 2 — Decorate & Reveal</div>
+        <div class="week-card-sub">Lights, styling & the grand unveiling</div>
+        <div class="mini-bar-bg"><div class="mini-bar-fill w2" id="w2-bar" style="width:0%"></div></div>
+        <div class="week-count" id="w2-count">0 / 25 tasks done</div>
+      </div>
+    </div>
+
+    <div class="section-title">🏆 Big Milestones</div>
+    <div class="milestone-list" id="milestone-list"></div>
+  </div>
+
+  <!-- ── QUEST BOARD ── -->
+  <div class="panel" id="panel-quest">
+    <div id="quest-board"></div>
+  </div>
+
+  <!-- ── GUIDES ── -->
+  <div class="panel" id="panel-guides">
+    <div id="guides-list">
+      <div class="guide-grid" id="guide-grid"></div>
+    </div>
+    <div class="guide-detail" id="guide-detail">
+      <button class="back-btn" onclick="closeGuide()">← Back to guides</button>
+      <div class="guide-full" id="guide-content"></div>
+    </div>
+  </div>
+
+  <!-- ── SHOPPING ── -->
+  <div class="panel" id="panel-shopping">
+    <div id="shopping-list"></div>
+  </div>
+
+  <!-- ── CREW ── -->
+  <div class="panel" id="panel-crew">
+    <div class="role-cards">
+      <div class="role-card elsie">
+        <div class="role-avatar">👑</div>
+        <div class="role-name">Elsie</div>
+        <div class="role-title">Chief Designer</div>
+        <div class="role-powers">
+          <div class="role-power">Picks the purple shade</div>
+          <div class="role-power">Decides where everything goes</div>
+          <div class="role-power">Paints her own wall section</div>
+          <div class="role-power">Does the first lights switch-on</div>
+          <div class="role-power">Styles the vanity and shelves</div>
+          <div class="role-power">Grand reveal moment is hers</div>
+        </div>
+        <div class="role-xp-badge" style="color:var(--purple-dark)">Earns the most XP ⚡</div>
+      </div>
+      <div class="role-card parents">
+        <div class="role-avatar">🔧</div>
+        <div class="role-name">Parents</div>
+        <div class="role-title">Master Builders</div>
+        <div class="role-powers">
+          <div class="role-power">Fill cracks & prime walls</div>
+          <div class="role-power">Apply all paint coats</div>
+          <div class="role-power">Build all furniture safely</div>
+          <div class="role-power">Mount shelves & mirror</div>
+          <div class="role-power">Install LED strips</div>
+          <div class="role-power">All drilling & wiring</div>
+        </div>
+        <div class="role-xp-badge" style="color:#1A6658">The muscle of the quest 💪</div>
+      </div>
+      <div class="role-card emma">
+        <div class="role-avatar">🌟</div>
+        <div class="role-name">Emma</div>
+        <div class="role-title">Special Correspondent</div>
+        <div class="role-powers">
+          <div class="role-power">Gets her own bedside table</div>
+          <div class="role-power">Arranges her own corner</div>
+          <div class="role-power">Helps with Together tasks</div>
+          <div class="role-power">Official quest photographer</div>
+        </div>
+        <div class="role-xp-badge" style="color:#8A3020">Part of the team too! 🎉</div>
+      </div>
+    </div>
+
+    <div class="rules-card">
+      <div class="rules-title">📜 The Quest Rules</div>
+      <div class="rule-item"><div class="rule-num">1</div><div class="rule-text">Nobody peeks at the finished room before the grand reveal — the surprise is the reward!</div></div>
+      <div class="rule-item"><div class="rule-num">2</div><div class="rule-text">Elsie is the Chief Designer. Her decisions about where things go are final (within reason!).</div></div>
+      <div class="rule-item"><div class="rule-num">3</div><div class="rule-text">Parents do all drilling, wiring, and anything with tools. Safety first — no exceptions.</div></div>
+      <div class="rule-item"><div class="rule-num">4</div><div class="rule-text">Emma's corner is Emma's — Elsie doesn't get to decide what goes there.</div></div>
+      <div class="rule-item"><div class="rule-num">5</div><div class="rule-text">XP is earned by doing — tick tasks off honestly when they're actually done!</div></div>
+      <div class="rule-item"><div class="rule-num">6</div><div class="rule-text">When the paint is drying, everyone respects the cure time. No touching the walls!</div></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────────────
+const TASKS = [
+  // WEEK 1
+  { w:1, day:"Mon Day 1 — Quest Launch", id:1,  t:"Hold a family quest briefing: the plan, the rules, the ban on early peeks", who:"t", boss:false, xp:3 },
+  { w:1, day:null, id:2,  t:"Elsie writes and decorates the 'Quest Rules' poster for the bedroom door", who:"e", boss:false, xp:4 },
+  { w:1, day:null, id:3,  t:"Take 'before' photos of every corner of the room", who:"t", boss:false, xp:3 },
+  { w:1, day:null, id:4,  t:"Empty the room completely — pack everything into labelled boxes", who:"t", boss:false, xp:5 },
+  { w:1, day:"Tue Day 2 — Crack-Filling & Prep", id:5,  t:"Inspect all four walls and mark every crack or dent with a sticky dot", who:"e", boss:false, xp:4 },
+  { w:1, day:null, id:6,  t:"Fill all cracks and holes with flexible decorator's filler; sand smooth once dry", who:"p", boss:false, xp:6 },
+  { w:1, day:null, id:7,  t:"Tape around skirting boards, ceiling edges, and window frames", who:"p", boss:false, xp:5 },
+  { w:1, day:null, id:8,  t:"Elsie paints test swatches of purple shades on the wall — lives with them overnight to choose", who:"e", boss:true, xp:6 },
+  { w:1, day:"Wed Day 3 — White Coat", id:9,  t:"Apply a coat of white primer/undercoat to all walls", who:"p", boss:false, xp:6 },
+  { w:1, day:null, id:10, t:"While walls dry: Elsie sorts all the Ikea vanity parts into labelled cups", who:"e", boss:false, xp:4 },
+  { w:1, day:null, id:11, t:"Begin building the Ikea vanity desk (get to step 10 today)", who:"p", boss:false, xp:6 },
+  { w:1, day:null, id:12, t:"Elsie is official instruction reader and bolt fetcher for the build", who:"e", boss:false, xp:4 },
+  { w:1, day:"Thu Day 4 — Purple Day!", id:13, t:"Apply first coat of purple to all walls — cut in edges carefully", who:"p", boss:false, xp:7 },
+  { w:1, day:null, id:14, t:"Elsie paints her own section of wall (lower half, supervised) — her permanent mark!", who:"t", boss:true, xp:8 },
+  { w:1, day:null, id:15, t:"Make a paint record card: dab the colour, write the name and brand for touch-ups", who:"e", boss:false, xp:3 },
+  { w:1, day:"Fri Day 5 — Second Coat & More Building", id:16, t:"Apply second and final purple coat — leave walls to cure fully", who:"p", boss:false, xp:6 },
+  { w:1, day:null, id:17, t:"Finish building the Ikea vanity desk completely", who:"p", boss:true, xp:7 },
+  { w:1, day:null, id:18, t:"Build Emma's bedside table", who:"p", boss:false, xp:5 },
+  { w:1, day:null, id:19, t:"Elsie does quality control — checks all drawers, handles, and moving parts", who:"e", boss:false, xp:4 },
+  { w:1, day:"Weekend Days 6-7 — Rest & Planning", id:20, t:"Remove all masking tape carefully while paint is slightly warm", who:"p", boss:false, xp:4 },
+  { w:1, day:null, id:21, t:"Elsie sketches her dream room layout — where everything goes, how the lights will look", who:"e", boss:false, xp:5 },
+  { w:1, day:null, id:22, t:"Order anything still needed: LED name sign, mirror, strips, cable clips", who:"p", boss:false, xp:3 },
+  { w:1, day:null, id:23, t:"Build or assemble Elsie's bedside table", who:"p", boss:false, xp:5 },
+  // WEEK 2
+  { w:2, day:"Mon Day 8 — Furniture In", id:24, t:"Carry all furniture back in following Elsie's layout sketch", who:"t", boss:false, xp:5 },
+  { w:2, day:null, id:25, t:"Mount the bookshelf safely to the wall — plugs and screws into studs", who:"p", boss:false, xp:6 },
+  { w:2, day:null, id:26, t:"Elsie decides on shelf heights and what goes on each one", who:"e", boss:false, xp:4 },
+  { w:2, day:null, id:27, t:"Touch up any paint scuffs from moving furniture back", who:"p", boss:false, xp:3 },
+  { w:2, day:"Tue Day 9 — Mirror & Vanity Zone", id:28, t:"Hang the new mirror — measure twice, spirit level, drill once", who:"p", boss:false, xp:6 },
+  { w:2, day:null, id:29, t:"Position the vanity desk in its final spot and secure if needed", who:"p", boss:false, xp:4 },
+  { w:2, day:null, id:30, t:"Elsie arranges her vanity top exactly how she wants — her domain, her rules!", who:"e", boss:true, xp:6 },
+  { w:2, day:null, id:31, t:"Plan the LED strip route together: mirror edge, under desk shelf, top of bookshelf", who:"t", boss:false, xp:4 },
+  { w:2, day:"Wed Day 10 — Lights Day!", id:32, t:"Attach LED strips with 3M Command strips — vanity mirror edge first", who:"p", boss:false, xp:5 },
+  { w:2, day:null, id:33, t:"Run LED strips under the desk shelf and along the bookshelf top", who:"p", boss:false, xp:5 },
+  { w:2, day:null, id:34, t:"Mount the LED name sign ('Elsie' in cursive) above the vanity — Elsie picks exact height", who:"t", boss:true, xp:7 },
+  { w:2, day:null, id:35, t:"Clip all cables neatly along skirting and furniture edges", who:"p", boss:false, xp:4 },
+  { w:2, day:null, id:36, t:"Elsie does the ceremonial first switch-on of every light — one by one!", who:"e", boss:true, xp:8 },
+  { w:2, day:"Thu Day 11 — Emma's Corner & Shelves", id:37, t:"Set up Emma's bedside table in her corner with her own things", who:"t", boss:false, xp:5 },
+  { w:2, day:null, id:38, t:"Emma arranges her corner exactly how she wants it", who:"t", boss:false, xp:4 },
+  { w:2, day:null, id:39, t:"Elsie organises and styles her bookshelf — books, ornaments, photos, her way", who:"e", boss:false, xp:6 },
+  { w:2, day:null, id:40, t:"Hang any wall art, photos or decorations Elsie has chosen", who:"t", boss:false, xp:4 },
+  { w:2, day:"Fri Day 12 — Finishing Touches", id:41, t:"Final check of all lights — test controller colours and modes", who:"e", boss:false, xp:4 },
+  { w:2, day:null, id:42, t:"Touch up any remaining paint nicks; tighten any loose screws", who:"p", boss:false, xp:3 },
+  { w:2, day:null, id:43, t:"Deep clean and hoover the whole room — it needs to sparkle", who:"t", boss:false, xp:4 },
+  { w:2, day:null, id:44, t:"Elsie makes a 'Grand Opening' sign for the door — as fancy as she likes!", who:"e", boss:false, xp:5 },
+  { w:2, day:"Weekend Days 13-14 — Grand Reveal!", id:45, t:"Elsie does a final solo walk-through and approves the room", who:"e", boss:false, xp:5 },
+  { w:2, day:null, id:46, t:"Family lines up outside, eyes shut — Elsie opens the door and turns on the name sign!", who:"t", boss:true, xp:10 },
+  { w:2, day:null, id:47, t:"Take 'after' photos side-by-side with the 'before' photos from Day 1", who:"t", boss:false, xp:4 },
+  { w:2, day:null, id:48, t:"Celebrate! Movie night in the new room — Elsie picks the film", who:"t", boss:true, xp:10 },
+];
+
+const MILESTONES = [
+  { id:'m1', taskId:8,  icon:'🎨', name:'The Colour is Chosen', day:'Day 2', desc:'Elsie picks her purple' },
+  { id:'m2', taskId:14, icon:'🖌️', name:'Elsie Paints the Wall', day:'Day 4', desc:'Her mark is on the room forever' },
+  { id:'m3', taskId:17, icon:'🪞', name:'Vanity Desk Complete', day:'Day 5', desc:'The centrepiece is built' },
+  { id:'m4', taskId:34, icon:'✨', name:'Name Sign Goes Up', day:'Day 10', desc:'"Elsie" in lights above the desk' },
+  { id:'m5', taskId:36, icon:'💡', name:'First Lights On', day:'Day 10', desc:'Elsie switches on every light' },
+  { id:'m6', taskId:46, icon:'🎉', name:'The Grand Reveal', day:'Day 13/14', desc:'The moment the room is unveiled' },
+];
+
+const GUIDES = [
+  {
+    id:'g1', icon:'🖌️', title:'How to fill cracks in walls',
+    sub:'Before you can paint purple, walls need to be perfect',
+    tags:['Week 1', 'Parents', 'Day 2'],
+    steps:[
+      'Use a flexible decorator\'s filler — brands like Polycell or Ronseal work well. Not hard plaster filler.',
+      'Push the filler firmly into the crack using a filling knife (or an old butter knife). Slightly overfill — it shrinks as it dries.',
+      'Leave to dry fully — at least 2 hours, ideally overnight for deeper cracks.',
+      'Sand smooth with fine sandpaper (120 grit) until flush with the wall. Run your hand over it — you shouldn\'t feel a bump.',
+      'Wipe away all dust with a damp cloth before you prime.',
+    ],
+    tip:'Fill in the morning, sand in the afternoon — you\'ll be ready to prime the next day.',
+    warning:'Skipping primer after filling means the purple paint will look patchy over the filled spots. Always prime first!',
+  },
+  {
+    id:'g2', icon:'🟣', title:'How to paint a wall purple',
+    sub:'Getting smooth, vivid coverage without streaks',
+    tags:['Week 1', 'Together', 'Days 3–4'],
+    steps:[
+      'Prime first — a coat of white primer/undercoat is essential over old walls, especially before a deep colour like purple.',
+      'Use a brush to "cut in" — paint a neat 5cm strip around all edges: ceiling, skirting, window frames, corners.',
+      'Use a roller for the main wall area. Roll in a W pattern, then fill in without lifting the roller.',
+      'Apply the first coat and let it dry completely — at least 4 hours, ideally overnight.',
+      'Apply the second coat. Purple usually needs 2 coats minimum for solid, even coverage.',
+      'Remove masking tape while the second coat is still slightly warm — not wet, not fully dry.',
+    ],
+    tip:'Keep the paint record card! Dab paint on a piece of card with the colour name and brand. Brilliant for touch-ups later.',
+    warning:'Don\'t hang anything on the walls for at least 4 weeks after painting — the paint needs to fully cure, or Command strips will pull it off.',
+  },
+  {
+    id:'g3', icon:'💡', title:'How to fit LED strips safely',
+    sub:'Getting the glow without damaging the walls or paint',
+    tags:['Week 2', 'Parents', 'Day 10'],
+    steps:[
+      'Plan the route first — LED strips work best hidden behind mirror edges, under shelf overhangs, and along desk edges. The strip is hidden; only the glow is visible.',
+      'Use 3M Command strips (velcro type) to attach the LED strips to the furniture and mirror frame — NOT double-sided tape direct to the painted wall.',
+      'Peel the Command strip backing and press firmly for 30 seconds. Leave for 1 hour before attaching the LED strip.',
+      'Run the LED strip along the planned route and connect sections with the corner connectors that come in the kit.',
+      'Plug in and test before tidying cables.',
+      'Use small cable clips or cable conduit to run cables neatly along furniture edges and skirting boards to the plug socket.',
+    ],
+    tip:'Position strips behind the mirror frame or shelf edge so the strip itself is hidden — you\'ll only see the glow. This looks far more professional.',
+    warning:'Wait at least 4 weeks after painting before attaching anything to the painted walls. Before that, the paint is still curing.',
+  },
+  {
+    id:'g4', icon:'🔧', title:'How to build the Ikea vanity',
+    sub:'Making the most important piece of furniture in the room',
+    tags:['Week 1', 'Parents + Elsie', 'Days 3–5'],
+    steps:[
+      'Unbox everything and lay all parts out on the floor. Count every screw type against the parts list before you start.',
+      'Elsie\'s job: sort all screws into labelled cups (cup A for type A screws, etc.) and be the official instruction reader.',
+      'Follow the Ikea booklet step by step — don\'t skip ahead. Ikea numbering is strict.',
+      'Tighten every connection firmly but don\'t over-tighten particle board — it strips easily.',
+      'Once assembled, do a wobble test. If it wobbles, an anti-tip wall bracket is essential for safety.',
+      'Attach the anti-tip bracket to the wall before Elsie uses it.',
+    ],
+    tip:'Lay a blanket on the floor to protect the furniture finish while building.',
+    warning:'Ikea furniture MUST have the anti-tip bracket fitted to the wall. Tall furniture can tip — especially with a child leaning on it.',
+  },
+  {
+    id:'g5', icon:'✨', title:'Hanging the LED name sign',
+    sub:'Getting "Elsie" in lights above the vanity',
+    tags:['Week 2', 'Parents', 'Day 10'],
+    steps:[
+      'Order from Amazon or Etsy — search "custom LED neon sign name" — budget around £30–70 depending on size. Allow 3–5 days delivery.',
+      'Measure the space above the vanity. The sign should be roughly centred and at comfortable eye height when Elsie is sitting at the desk.',
+      'Most signs come with a clear acrylic backing and wall mount screws. Mark the fixing points in pencil first.',
+      'Use a spirit level to make sure it\'s perfectly straight before drilling.',
+      'Drill and plug the wall, screw in the mount, hang the sign, and plug in.',
+    ],
+    tip:'Centre the sign above the mirror rather than the whole desk — it looks better in the reflection!',
+    warning:'Drill into plasterboard carefully — use wall plugs rated for plasterboard (not just standard plugs) as they grip differently.',
+  },
+  {
+    id:'g6', icon:'📸', title:'The Grand Reveal — how to do it right',
+    sub:'Making the final moment as magical as possible',
+    tags:['Week 2', 'Together', 'Day 13/14'],
+    steps:[
+      'Elsie does a solo final check the day before — she should be happy with everything before the reveal.',
+      'On reveal day, everyone stands outside the closed door. Eyes shut is optional but fun.',
+      'Elsie opens the door and enters first. She switches on the name sign, then the LED strips, then the main light.',
+      'Everyone else enters and reacts — this is Elsie\'s moment! Make a big deal of it.',
+      'Take "after" photos in the same spots as the "before" photos from Day 1 for an incredible comparison.',
+      'Celebrate properly — movie night in the new room, Elsie picks the film.',
+    ],
+    tip:'Record a short video on a phone — the reactions are priceless and Elsie will love watching it back.',
+    warning:'Make sure the room is properly clean and tidy before the reveal — first impressions last! Do the final hoover the day before.',
+  },
+];
+
+const SHOPPING = [
+  { cat:"Order immediately", items:[
+    { id:'s1', name:'Purple paint', note:'e.g. Dulux / Crown — 2.5L should cover avg bedroom twice', priority:'urgent' },
+    { id:'s2', name:'White primer / undercoat', note:'1L is enough for most bedrooms', priority:'urgent' },
+    { id:'s3', name:'Flexible decorator\'s filler', note:'Polycell or Ronseal — one tube', priority:'urgent' },
+    { id:'s4', name:'Masking tape', note:'Two rolls of 25mm painters tape', priority:'urgent' },
+  ]},
+  { cat:"Order before Week 2", items:[
+    { id:'s5', name:'LED name sign — "Elsie" in cursive', note:'Amazon or Etsy — allow 3-5 days delivery', priority:'before' },
+    { id:'s6', name:'LED strip lights (colour changing, remote)', note:'5m strip with controller — check it has a remote', priority:'before' },
+    { id:'s7', name:'New mirror', note:'Measure the wall space first!', priority:'before' },
+  ]},
+  { cat:"Get from a DIY shop", items:[
+    { id:'s8', name:'3M Command strips (velcro type)', note:'For LED strips — avoids damaging painted walls', priority:'before' },
+    { id:'s9', name:'Cable clips / cable conduit', note:'For tidying LED cables along skirting', priority:'before' },
+    { id:'s10', name:'Fine sandpaper (120 grit)', note:'For sanding back filler', priority:'before' },
+    { id:'s11', name:'Anti-tip bracket for Ikea vanity', note:'Safety essential', priority:'before' },
+    { id:'s12', name:'Paint roller + tray + brush set', note:'Medium pile roller, angled brush for cutting in', priority:'urgent' },
+  ]},
+  { cat:"Nice to have", items:[
+    { id:'s13', name:'Peel-and-stick shelf liner for bookshelf', note:'Adds a nice finish inside the shelves', priority:'nice' },
+    { id:'s14', name:'Small photo frames for Elsie\'s shelf', note:'4–6 for photos, artwork, memory items', priority:'nice' },
+    { id:'s15', name:'Fairy lights (backup / extra atmosphere)', note:'For Emma\'s corner or above the bed', priority:'nice' },
+  ]},
+];
+
+// ── STATE ──────────────────────────────────────────────────────────
+const TOTAL_XP = TASKS.reduce((s,t)=>s+t.xp,0);
+let checked=[], shopChecked=[];
+try { checked=JSON.parse(localStorage.getItem('eq_tasks')||'[]'); } catch(e){}
+try { shopChecked=JSON.parse(localStorage.getItem('eq_shop')||'[]'); } catch(e){}
+
+function save(){ try{localStorage.setItem('eq_tasks',JSON.stringify(checked));localStorage.setItem('eq_shop',JSON.stringify(shopChecked));}catch(e){} }
+
+// ── HELPERS ──────────────────────────────────────────────────────────
+function whoName(w){ return w==='e'?'Elsie':w==='p'?'Parents':'Together'; }
+function whoBadge(w){
+  const cls = w==='e'?'tbadge-e':w==='p'?'tbadge-p':'tbadge-t';
+  return `<span class="tbadge ${cls}">${whoName(w)}</span>`;
+}
+
+// ── RENDER QUEST BOARD ──────────────────────────────────────────────
+function buildQuestBoard(){
+  const el=document.getElementById('quest-board');
+  let html='';
+  let week=0, dayLabel=null;
+  TASKS.forEach(task=>{
+    if(task.w!==week){
+      if(week>0) html+='</div>';
+      week=task.w;
+      const w1xp=TASKS.filter(t=>t.w===1).reduce((s,t)=>s+t.xp,0);
+      const w2xp=TASKS.filter(t=>t.w===2).reduce((s,t)=>s+t.xp,0);
+      const wxp=week===1?w1xp:w2xp;
+      const wsub=week===1?'Prep, fill, prime, paint & build all the furniture':'Hang, light up, style & reveal';
+      const wtitle=week===1?'Week 1 — Prep & Build':'Week 2 — Decorate & Reveal';
+      html+=`<div class="week-section"><div class="week-banner"><div><div class="week-banner-title">${wtitle}</div><div class="week-banner-sub">${wsub}</div></div><div class="week-banner-xp">⚡ ${wxp} XP</div></div>`;
+    }
+    if(task.day!==null){
+      if(dayLabel!==null) html+='</div>';
+      dayLabel=task.day;
+      html+=`<div class="day-group"><div class="day-heading">${task.day}</div>`;
+    }
+    const done=checked.includes(task.id);
+    const bossClass=task.boss?' boss':'';
+    const doneClass=done?' done':'';
+    const chkClass=done?' checked':'';
+    html+=`<div class="task-row${bossClass}${doneClass}" onclick="toggleTask(${task.id})">
+      <div class="task-check${chkClass}"></div>
+      <div class="task-content">
+        <div class="task-text">${task.t}</div>
+        <div class="task-badges">${whoBadge(task.who)}${task.boss?'<span class="tbadge tbadge-boss">⭐ Boss task</span>':''}<span class="tbadge tbadge-xp">+${task.xp} XP</span></div>
+      </div>
+    </div>`;
+  });
+  html+='</div></div>';
+  el.innerHTML=html;
+}
+
+// ── TODAY BLOCK ──────────────────────────────────────────────────────
+function buildToday(){
+  const el=document.getElementById('today-block');
+  // Day 1 tasks shown as "today" until everything's done
+  const todayTasks=TASKS.filter(t=>t.w===1&&t.day&&t.day.startsWith('Mon'));
+  const allDone=todayTasks.every(t=>checked.includes(t.id));
+  let html=`<div class="today-card"><div class="today-label">📅 Quest starts Monday</div><div class="today-day-name">Day 1 — Quest Launch Day 🚀</div><div class="today-tasks">`;
+  todayTasks.forEach(task=>{
+    const done=checked.includes(task.id);
+    const wl=task.who==='e'?'who-e':task.who==='p'?'who-p':'who-t';
+    html+=`<div class="today-task${done?' done':''}" onclick="toggleTask(${task.id})">
+      <div class="today-check${done?' checked':''}"></div>
+      <div class="today-task-text">${task.t}</div>
+      <span class="today-who ${wl}">${whoName(task.who)}</span>
+    </div>`;
+  });
+  html+=`</div></div>`;
+  el.innerHTML=html;
+}
+
+// ── MILESTONES ──────────────────────────────────────────────────────
+function buildMilestones(){
+  const el=document.getElementById('milestone-list');
+  let html='';
+  MILESTONES.forEach((m,i)=>{
+    const done=checked.includes(m.taskId);
+    const upcoming=!done&&i>0&&!checked.includes(MILESTONES[i-1]?.taskId);
+    const cls=done?' done':upcoming?' upcoming':'';
+    const status=done?'Done! ✓':upcoming?'Upcoming':'Next up!';
+    html+=`<div class="milestone${cls}">
+      <div class="milestone-icon">${m.icon}</div>
+      <div class="milestone-body"><div class="milestone-name">${m.name}</div><div class="milestone-day">${m.day} · ${m.desc}</div></div>
+      <div class="milestone-status">${status}</div>
+    </div>`;
+  });
+  el.innerHTML=html;
+}
+
+// ── GUIDES ──────────────────────────────────────────────────────────
+function buildGuides(){
+  const el=document.getElementById('guide-grid');
+  let html='';
+  GUIDES.forEach(g=>{
+    const tags=g.tags.map(t=>`<span class="guide-tag">${t}</span>`).join('');
+    html+=`<div class="guide-card" onclick="openGuide('${g.id}')">
+      <div class="guide-icon">${g.icon}</div>
+      <div class="guide-title">${g.title}</div>
+      <div class="guide-sub">${g.sub}</div>
+      <div class="guide-tags">${tags}</div>
+    </div>`;
+  });
+  el.innerHTML=html;
+}
+
+function openGuide(id){
+  const g=GUIDES.find(x=>x.id===id);
+  if(!g) return;
+  const steps=g.steps.map((s,i)=>`<div class="guide-step"><div class="guide-step-num">${i+1}</div><div class="guide-step-text">${s}</div></div>`).join('');
+  const tip=g.tip?`<div class="guide-tip"><div class="guide-tip-label">💡 Pro tip</div>${g.tip}</div>`:'';
+  const warn=g.warning?`<div class="guide-warning"><div class="guide-warning-label">⚠️ Watch out</div>${g.warning}</div>`:'';
+  document.getElementById('guide-content').innerHTML=`<div class="guide-full-title">${g.icon} ${g.title}</div>${steps}${tip}${warn}`;
+  document.getElementById('guides-list').style.display='none';
+  document.getElementById('guide-detail').classList.add('open');
+}
+function closeGuide(){
+  document.getElementById('guides-list').style.display='';
+  document.getElementById('guide-detail').classList.remove('open');
+}
+
+// ── SHOPPING ──────────────────────────────────────────────────────────
+function buildShopping(){
+  const el=document.getElementById('shopping-list');
+  let html='';
+  SHOPPING.forEach(cat=>{
+    html+=`<div class="shop-section"><div class="shop-section-title">🛒 ${cat.cat}</div>`;
+    cat.items.forEach(item=>{
+      const done=shopChecked.includes(item.id);
+      const prioCls=item.priority==='urgent'?'prio-urgent':item.priority==='before'?'prio-before':'prio-nice';
+      const prioText=item.priority==='urgent'?'Get now':item.priority==='before'?'Before Week 2':'Nice to have';
+      html+=`<div class="shop-item${done?' done':''}" onclick="toggleShop('${item.id}')">
+        <div class="shop-check${done?' checked':''}"></div>
+        <div class="shop-name">${item.name}</div>
+        <div class="shop-note">${item.note}</div>
+        <span class="shop-priority ${prioCls}">${prioText}</span>
+      </div>`;
+    });
+    html+='</div>';
+  });
+  el.innerHTML=html;
+}
+
+// ── STATS ──────────────────────────────────────────────────────────
+function updateStats(){
+  const earned=TASKS.filter(t=>checked.includes(t.id)).reduce((s,t)=>s+t.xp,0);
+  const pct=Math.round(earned/TOTAL_XP*100);
+  document.getElementById('hdr-fill').style.width=pct+'%';
+  document.getElementById('hdr-xp').textContent=`${earned} / ${TOTAL_XP}`;
+  [1,2,3,4,5].forEach(i=>{ document.getElementById('star'+i).classList.toggle('lit',pct>=i*20); });
+
+  const doneCnt=checked.length;
+  const bossDone=TASKS.filter(t=>t.boss&&checked.includes(t.id)).length;
+  const bossTotal=TASKS.filter(t=>t.boss).length;
+  document.getElementById('stat-done').textContent=doneCnt;
+  document.getElementById('stat-xp').textContent=earned;
+  document.getElementById('stat-boss').textContent=`${bossDone}/${bossTotal}`;
+
+  const w1t=TASKS.filter(t=>t.w===1);
+  const w2t=TASKS.filter(t=>t.w===2);
+  const w1d=w1t.filter(t=>checked.includes(t.id)).length;
+  const w2d=w2t.filter(t=>checked.includes(t.id)).length;
+  document.getElementById('w1-bar').style.width=Math.round(w1d/w1t.length*100)+'%';
+  document.getElementById('w2-bar').style.width=Math.round(w2d/w2t.length*100)+'%';
+  document.getElementById('w1-count').textContent=`${w1d} / ${w1t.length} tasks done`;
+  document.getElementById('w2-count').textContent=`${w2d} / ${w2t.length} tasks done`;
+}
+
+// ── EVENTS ──────────────────────────────────────────────────────────
+function toggleTask(id){
+  if(checked.includes(id)) checked=checked.filter(x=>x!==id);
+  else checked.push(id);
+  save();
+  updateStats();
+  buildQuestBoard();
+  buildMilestones();
+  buildToday();
+}
+function toggleShop(id){
+  if(shopChecked.includes(id)) shopChecked=shopChecked.filter(x=>x!==id);
+  else shopChecked.push(id);
+  save();
+  buildShopping();
+}
+function showTab(tab){
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('panel-'+tab).classList.add('active');
+  event.target.closest('.tab-btn').classList.add('active');
+}
+
+// ── STARS ──────────────────────────────────────────────────────────
+function buildStars(){
+  const sf=document.getElementById('starfield');
+  for(let i=0;i<28;i++){
+    const d=document.createElement('div');
+    d.className='star-dot';
+    const s=Math.random()*3+1;
+    d.style.cssText=`width:${s}px;height:${s}px;top:${Math.random()*100}%;left:${Math.random()*100}%;animation-delay:${Math.random()*3}s;animation-duration:${2+Math.random()*3}s`;
+    sf.appendChild(d);
+  }
+}
+
+// ── INIT ──────────────────────────────────────────────────────────
+buildStars();
+buildToday();
+buildQuestBoard();
+buildMilestones();
+buildGuides();
+buildShopping();
+updateStats();
+</script>
+</body>
+</html>
