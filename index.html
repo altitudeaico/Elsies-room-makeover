@@ -173,8 +173,8 @@
   .tbadge-t{background:var(--gold-light);color:#7A5008;}
   .tbadge-xp{background:var(--bg);color:var(--text-soft);border:1px solid var(--border);}
   .tbadge-boss{background:var(--gold);color:var(--p1);}
-  .task-expand-btn{background:none;border:none;cursor:pointer;font-size:11px;font-weight:700;color:var(--p4);padding:2px 6px;border-radius:6px;transition:background 0.15s;}
-  .task-expand-btn:hover{background:var(--p6);}
+  .task-expand-btn{background:var(--p6);border:2px solid var(--p5);cursor:pointer;font-size:14px;font-weight:800;color:var(--p2);padding:8px 14px;border-radius:12px;transition:all 0.15s;white-space:nowrap;}
+  .task-expand-btn:hover{background:var(--p3);border-color:var(--p3);color:white;}
   .completed-by{font-size:11px;color:var(--p4);font-weight:600;margin-top:3px;}
 
   /* TASK PANEL (notes + photo) */
@@ -815,7 +815,7 @@ function buildQuestBoard() {
           <div class="task-badges">${whoBadge(task.who)}${task.boss?'<span class="tbadge tbadge-boss">🦋 Boss task</span>':''}<span class="tbadge tbadge-xp">+${task.xp} XP</span></div>
           ${comp?`<div class="completed-by">✓ Done by ${comp.completed_by} · ${fmtTime(comp.completed_at)}</div>`:''}
         </div>
-        <div style="display:flex;gap:4px;flex-shrink:0" onclick="event.stopPropagation()">
+        <div style="display:flex;gap:8px;flex-shrink:0;align-items:center" onclick="event.stopPropagation()">
           <button class="task-expand-btn" onclick="togglePanel(${task.id},'notes')">💬 ${noteCount}</button>
           <button class="task-expand-btn" onclick="togglePanel(${task.id},'photos')">📸 ${photoCount}</button>
         </div>
@@ -853,7 +853,7 @@ function togglePanel(taskId, tab) {
         <div class="task-badges">${whoBadge(task.who)}${task.boss?'<span class="tbadge tbadge-boss">🦋 Boss task</span>':''}<span class="tbadge tbadge-xp">+${task.xp} XP</span></div>
         ${comp?`<div class="completed-by">✓ Done by ${comp.completed_by} · ${fmtTime(comp.completed_at)}</div>`:''}
       </div>
-      <div style="display:flex;gap:4px;flex-shrink:0" onclick="event.stopPropagation()">
+      <div style="display:flex;gap:8px;flex-shrink:0;align-items:center" onclick="event.stopPropagation()">
         <button class="task-expand-btn" onclick="togglePanel(${taskId},'notes')">💬 ${noteCount}</button>
         <button class="task-expand-btn" onclick="togglePanel(${taskId},'photos')">📸 ${photoCount}</button>
       </div>
