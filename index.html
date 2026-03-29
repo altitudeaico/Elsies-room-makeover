@@ -5,384 +5,346 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Elsie's Room Makeover — HQ 🦋</title>
 <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   :root {
-    --p0: #1A0A2E;
-    --p1: #2D1B5E;
-    --p2: #4A2F8A;
-    --p3: #6B46C1;
-    --p4: #9B6FD4;
-    --p5: #C4A8E8;
-    --p6: #E8D8F8;
-    --p7: #F5EFFE;
-    --lavender: #D4B8F0;
-    --lilac: #EAD4FF;
-    --rose: #F0A8D0;
-    --rose-light: #FDE8F4;
-    --gold: #F5C842;
-    --gold-light: #FEF7D4;
-    --mint: #A8E8D4;
-    --mint-light: #E4FBF5;
-    --white: #FFFFFF;
-    --bg: #F8F2FF;
-    --text: #1A0A2E;
-    --text-soft: #7B5EA7;
-    --border: #DCC8F0;
+    --p0:#1A0A2E;--p1:#2D1B5E;--p2:#4A2F8A;--p3:#6B46C1;--p4:#9B6FD4;--p5:#C4A8E8;--p6:#E8D8F8;--p7:#F5EFFE;
+    --lavender:#D4B8F0;--lilac:#EAD4FF;--rose:#F0A8D0;--rose-light:#FDE8F4;--gold:#F5C842;--gold-light:#FEF7D4;
+    --mint:#A8E8D4;--mint-light:#E4FBF5;--white:#FFFFFF;--bg:#F8F2FF;--text:#1A0A2E;--text-soft:#7B5EA7;--border:#DCC8F0;
   }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: 'Nunito', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    overflow-x: hidden;
-  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
 
-  /* ── FLOATING BUTTERFLIES ── */
-  .butterfly-float {
-    position: fixed; pointer-events: none; z-index: 0;
-    opacity: 0; animation: butterflyDrift linear infinite;
-  }
-  @keyframes butterflyDrift {
-    0%   { transform: translateY(100vh) translateX(0) rotate(0deg); opacity: 0; }
-    5%   { opacity: 0.6; }
-    90%  { opacity: 0.4; }
-    100% { transform: translateY(-120px) translateX(60px) rotate(15deg); opacity: 0; }
-  }
+  /* IDENTITY PICKER */
+  .id-overlay{position:fixed;inset:0;background:var(--p0);z-index:9999;display:flex;align-items:center;justify-content:center;}
+  .id-box{background:var(--p1);border-radius:28px;padding:40px 32px;border:2px solid var(--p3);max-width:400px;width:90%;text-align:center;}
+  .id-title{font-family:'Pacifico',cursive;font-size:26px;color:white;margin-bottom:6px;}
+  .id-sub{color:var(--lavender);font-size:14px;font-weight:600;margin-bottom:28px;}
+  .id-btn{width:100%;padding:16px;border-radius:16px;border:2px solid transparent;font-family:'Nunito',sans-serif;font-weight:800;font-size:16px;cursor:pointer;margin-bottom:10px;transition:all 0.2s;display:flex;align-items:center;gap:12px;}
+  .id-btn:last-child{margin-bottom:0;}
+  .id-btn.elsie{background:var(--p6);color:var(--p2);border-color:var(--p5);}
+  .id-btn.elsie:hover{background:var(--p5);color:white;}
+  .id-btn.parents{background:var(--mint-light);color:#1A5A48;border-color:var(--mint);}
+  .id-btn.parents:hover{background:var(--mint);color:white;}
+  .id-btn.emma{background:var(--rose-light);color:#8A2060;border-color:var(--rose);}
+  .id-btn.emma:hover{background:var(--rose);color:white;}
+  .id-btn-icon{font-size:26px;}
+  .id-btn-text{text-align:left;flex:1;}
+  .id-btn-name{font-size:17px;}
+  .id-btn-role{font-size:11px;opacity:0.7;font-weight:600;}
 
-  /* ── HEADER ── */
-  .hq-header {
-    background: linear-gradient(135deg, var(--p0) 0%, var(--p1) 50%, var(--p2) 100%);
-    padding: 32px 32px 28px;
-    position: relative; overflow: hidden;
-  }
-  .hq-header::after {
-    content: '';
-    position: absolute; inset: 0;
-    background: radial-gradient(ellipse at 70% 30%, rgba(155,111,212,0.35) 0%, transparent 60%),
-                radial-gradient(ellipse at 20% 80%, rgba(75,47,138,0.4) 0%, transparent 50%);
-    pointer-events: none;
-  }
-  .header-butterflies {
-    position: absolute; inset: 0; pointer-events: none; z-index: 1;
-  }
-  .hb { position: absolute; opacity: 0; animation: hbFloat ease-in-out infinite; }
-  @keyframes hbFloat {
-    0%,100% { transform: translateY(0) rotate(-5deg); opacity: 0.5; }
-    50%      { transform: translateY(-14px) rotate(5deg); opacity: 0.9; }
-  }
-  .header-inner { position: relative; z-index: 2; max-width: 960px; margin: 0 auto; }
-  .header-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; flex-wrap: wrap; }
-  .hq-badge {
-    background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.25);
-    border-radius: 20px; padding: 4px 14px;
-    font-size: 11px; font-weight: 700; letter-spacing: 0.1em;
-    text-transform: uppercase; color: var(--lavender);
-    display: inline-flex; align-items: center; gap: 6px; margin-bottom: 10px;
-  }
-  .hq-title {
-    font-family: 'Pacifico', cursive;
-    font-size: 40px; color: white; line-height: 1.15;
-    text-shadow: 0 3px 20px rgba(0,0,0,0.4);
-  }
-  .hq-title .gold { color: var(--gold); }
-  .hq-sub { color: var(--lavender); font-size: 14px; margin-top: 8px; font-weight: 600; }
+  /* FLOATING BUTTERFLIES */
+  .butterfly-float{position:fixed;pointer-events:none;z-index:0;opacity:0;animation:butterflyDrift linear infinite;}
+  @keyframes butterflyDrift{0%{transform:translateY(100vh) translateX(0) rotate(0deg);opacity:0;}5%{opacity:0.6;}90%{opacity:0.4;}100%{transform:translateY(-120px) translateX(60px) rotate(15deg);opacity:0;}}
 
-  .header-xp-block { flex-shrink: 0; min-width: 220px; }
-  .xp-label-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
-  .xp-title { color: var(--gold); font-weight: 800; font-size: 13px; letter-spacing: 0.05em; }
-  .xp-count { color: white; font-weight: 700; font-size: 13px; }
-  .xp-track { background: rgba(255,255,255,0.12); border-radius: 99px; height: 14px; overflow: hidden; border: 1px solid rgba(255,255,255,0.15); }
-  .xp-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--gold), #FFB347); transition: width 0.7s cubic-bezier(.34,1.56,.64,1); }
-  .xp-butterflies { display: flex; gap: 4px; margin-top: 8px; justify-content: flex-end; }
-  .xp-bf { font-size: 18px; filter: grayscale(1) brightness(0.6); transition: filter 0.5s; }
-  .xp-bf.lit { filter: none; }
+  /* HEADER */
+  .hq-header{background:linear-gradient(135deg,var(--p0) 0%,var(--p1) 50%,var(--p2) 100%);padding:28px 32px 24px;position:relative;overflow:hidden;}
+  .hq-header::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 70% 30%,rgba(155,111,212,0.35) 0%,transparent 60%),radial-gradient(ellipse at 20% 80%,rgba(75,47,138,0.4) 0%,transparent 50%);pointer-events:none;}
+  .header-butterflies{position:absolute;inset:0;pointer-events:none;z-index:1;}
+  .hb{position:absolute;opacity:0;animation:hbFloat ease-in-out infinite;}
+  @keyframes hbFloat{0%,100%{transform:translateY(0) rotate(-5deg);opacity:0.5;}50%{transform:translateY(-14px) rotate(5deg);opacity:0.9;}}
+  .header-inner{position:relative;z-index:2;max-width:960px;margin:0 auto;}
+  .header-top{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;flex-wrap:wrap;}
+  .hq-badge{background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.25);border-radius:20px;padding:4px 14px;font-size:11px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--lavender);display:inline-flex;align-items:center;gap:6px;margin-bottom:10px;}
+  .hq-title{font-family:'Pacifico',cursive;font-size:36px;color:white;line-height:1.15;text-shadow:0 3px 20px rgba(0,0,0,0.4);}
+  .hq-title .gold{color:var(--gold);}
+  .hq-sub{color:var(--lavender);font-size:13px;margin-top:6px;font-weight:600;}
+  .header-right{display:flex;flex-direction:column;align-items:flex-end;gap:10px;flex-shrink:0;}
+  .header-xp-block{min-width:200px;}
+  .xp-label-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+  .xp-title{color:var(--gold);font-weight:800;font-size:12px;letter-spacing:0.05em;}
+  .xp-count{color:white;font-weight:700;font-size:12px;}
+  .xp-track{background:rgba(255,255,255,0.12);border-radius:99px;height:12px;overflow:hidden;border:1px solid rgba(255,255,255,0.15);}
+  .xp-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--gold),#FFB347);transition:width 0.7s cubic-bezier(.34,1.56,.64,1);}
+  .xp-butterflies{display:flex;gap:4px;margin-top:6px;justify-content:flex-end;}
+  .xp-bf{font-size:16px;filter:grayscale(1) brightness(0.6);transition:filter 0.5s;}
+  .xp-bf.lit{filter:none;}
+  .identity-pill{background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.2);border-radius:20px;padding:5px 14px;font-size:12px;font-weight:700;color:white;cursor:pointer;transition:background 0.2s;}
+  .identity-pill:hover{background:rgba(255,255,255,0.2);}
 
-  /* ── NAV TABS ── */
-  .nav-tabs {
-    background: var(--p1); border-bottom: 2px solid var(--p2);
-    display: flex; gap: 0; overflow-x: auto;
-    position: sticky; top: 0; z-index: 100;
-    box-shadow: 0 3px 16px rgba(26,10,46,0.3);
-  }
-  .tab-btn {
-    padding: 14px 20px; font-family: 'Nunito', sans-serif;
-    font-size: 13px; font-weight: 700; border: none;
-    background: transparent; color: var(--lavender);
-    cursor: pointer; white-space: nowrap;
-    border-bottom: 3px solid transparent; margin-bottom: -2px;
-    transition: color 0.2s, border-color 0.2s, background 0.2s;
-  }
-  .tab-btn.active { color: var(--gold); border-bottom-color: var(--gold); }
-  .tab-btn:hover:not(.active) { color: white; background: rgba(255,255,255,0.08); }
-  .tab-icon { margin-right: 5px; font-size: 15px; }
+  /* SYNC STATUS */
+  .sync-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#4CAF50;margin-right:5px;animation:pulse 2s infinite;}
+  .sync-dot.offline{background:#ff6b6b;animation:none;}
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.5;}}
 
-  /* ── MAIN ── */
-  .main { max-width: 960px; margin: 0 auto; padding: 24px 20px 80px; position: relative; z-index: 1; }
-  .panel { display: none; }
-  .panel.active { display: block; }
+  /* NAV TABS */
+  .nav-tabs{background:var(--p1);border-bottom:2px solid var(--p2);display:flex;gap:0;overflow-x:auto;position:sticky;top:0;z-index:100;box-shadow:0 3px 16px rgba(26,10,46,0.3);}
+  .tab-btn{padding:12px 18px;font-family:'Nunito',sans-serif;font-size:12px;font-weight:700;border:none;background:transparent;color:var(--lavender);cursor:pointer;white-space:nowrap;border-bottom:3px solid transparent;margin-bottom:-2px;transition:color 0.2s,border-color 0.2s,background 0.2s;}
+  .tab-btn.active{color:var(--gold);border-bottom-color:var(--gold);}
+  .tab-btn:hover:not(.active){color:white;background:rgba(255,255,255,0.08);}
 
-  /* decorative butterfly watermark behind content */
-  .panel::before {
-    content: '';
-    position: fixed; right: -60px; bottom: 80px;
-    width: 300px; height: 300px;
-    background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 180'%3E%3Cellipse cx='60' cy='70' rx='55' ry='40' fill='%239B6FD4' opacity='0.06' transform='rotate(-30 60 70)'/%3E%3Cellipse cx='140' cy='70' rx='55' ry='40' fill='%239B6FD4' opacity='0.06' transform='rotate(30 140 70)'/%3E%3Cellipse cx='65' cy='110' rx='40' ry='28' fill='%239B6FD4' opacity='0.04' transform='rotate(20 65 110)'/%3E%3Cellipse cx='135' cy='110' rx='40' ry='28' fill='%239B6FD4' opacity='0.04' transform='rotate(-20 135 110)'/%3E%3C/svg%3E") no-repeat center;
-    background-size: contain;
-    pointer-events: none; z-index: 0;
-  }
+  /* MAIN */
+  .main{max-width:960px;margin:0 auto;padding:24px 20px 80px;position:relative;z-index:1;}
+  .panel{display:none;}
+  .panel.active{display:block;}
+  .panel::before{content:'';position:fixed;right:-60px;bottom:80px;width:300px;height:300px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 180'%3E%3Cellipse cx='60' cy='70' rx='55' ry='40' fill='%239B6FD4' opacity='0.06' transform='rotate(-30 60 70)'/%3E%3Cellipse cx='140' cy='70' rx='55' ry='40' fill='%239B6FD4' opacity='0.06' transform='rotate(30 140 70)'/%3E%3C/svg%3E") no-repeat center;background-size:contain;pointer-events:none;z-index:0;}
 
-  /* ── SECTION TITLE ── */
-  .section-title {
-    font-family: 'Pacifico', cursive;
-    font-size: 18px; color: var(--p2);
-    margin: 24px 0 14px; display: flex; align-items: center; gap: 10px;
-  }
-  .section-title::after { content: ''; flex: 1; height: 2px; background: var(--border); border-radius: 2px; }
+  /* SECTION TITLE */
+  .section-title{font-family:'Pacifico',cursive;font-size:17px;color:var(--p2);margin:22px 0 12px;display:flex;align-items:center;gap:10px;}
+  .section-title::after{content:'';flex:1;height:2px;background:var(--border);border-radius:2px;}
 
-  /* ── STAT CARDS ── */
-  .dash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 18px; }
-  .stat-card {
-    background: white; border-radius: 18px;
-    border: 1.5px solid var(--border); padding: 18px 20px;
-    position: relative; overflow: hidden;
-  }
-  .stat-card::after { content: attr(data-bf); position: absolute; right: 12px; bottom: 8px; font-size: 32px; opacity: 0.12; }
-  .stat-card.s-purple { background: var(--p7); border-color: var(--p5); }
-  .stat-card.s-gold   { background: var(--gold-light); border-color: #E8C050; }
-  .stat-card.s-rose   { background: var(--rose-light); border-color: #E8A0C0; }
-  .stat-card.s-mint   { background: var(--mint-light); border-color: #80D8C0; }
-  .stat-icon { font-size: 26px; margin-bottom: 6px; }
-  .stat-num { font-family: 'Pacifico', cursive; font-size: 30px; color: var(--p2); line-height: 1; }
-  .stat-desc { font-size: 13px; color: var(--text-soft); margin-top: 5px; font-weight: 600; }
+  /* STAT CARDS */
+  .dash-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;}
+  .stat-card{background:white;border-radius:18px;border:1.5px solid var(--border);padding:16px 18px;position:relative;overflow:hidden;}
+  .stat-card::after{content:attr(data-bf);position:absolute;right:12px;bottom:8px;font-size:28px;opacity:0.12;}
+  .stat-card.s-purple{background:var(--p7);border-color:var(--p5);}
+  .stat-card.s-gold{background:var(--gold-light);border-color:#E8C050;}
+  .stat-card.s-rose{background:var(--rose-light);border-color:#E8A0C0;}
+  .stat-card.s-mint{background:var(--mint-light);border-color:#80D8C0;}
+  .stat-icon{font-size:24px;margin-bottom:4px;}
+  .stat-num{font-family:'Pacifico',cursive;font-size:28px;color:var(--p2);line-height:1;}
+  .stat-desc{font-size:12px;color:var(--text-soft);margin-top:4px;font-weight:600;}
 
-  /* ── WEEK CARDS ── */
-  .week-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 18px; }
-  .week-card {
-    background: white; border-radius: 18px;
-    border: 1.5px solid var(--border); padding: 18px 20px;
-  }
-  .week-card-title { font-weight: 800; font-size: 15px; margin-bottom: 4px; }
-  .week-card-sub { font-size: 12px; color: var(--text-soft); margin-bottom: 12px; font-weight: 600; }
-  .mini-bar-bg { background: var(--border); border-radius: 99px; height: 9px; overflow: hidden; margin-bottom: 8px; }
-  .mini-bar-fill { height: 100%; border-radius: 99px; transition: width 0.5s; }
-  .mini-bar-fill.w1 { background: linear-gradient(90deg, var(--p3), var(--p4)); }
-  .mini-bar-fill.w2 { background: linear-gradient(90deg, var(--rose), #E880C0); }
-  .week-count { font-size: 12px; color: var(--text-soft); font-weight: 700; }
+  /* WEEK CARDS */
+  .week-cards{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;}
+  .week-card{background:white;border-radius:18px;border:1.5px solid var(--border);padding:16px 18px;}
+  .week-card-title{font-weight:800;font-size:14px;margin-bottom:3px;}
+  .week-card-sub{font-size:11px;color:var(--text-soft);margin-bottom:10px;font-weight:600;}
+  .mini-bar-bg{background:var(--border);border-radius:99px;height:8px;overflow:hidden;margin-bottom:6px;}
+  .mini-bar-fill{height:100%;border-radius:99px;transition:width 0.5s;}
+  .mini-bar-fill.w1{background:linear-gradient(90deg,var(--p3),var(--p4));}
+  .mini-bar-fill.w2{background:linear-gradient(90deg,var(--rose),#E880C0);}
+  .week-count{font-size:11px;color:var(--text-soft);font-weight:700;}
 
-  /* ── TODAY BLOCK ── */
-  .today-card {
-    background: linear-gradient(135deg, var(--p1), var(--p2));
-    border-radius: 20px; padding: 22px; margin-bottom: 20px;
-    position: relative; overflow: hidden;
-    border: 1.5px solid var(--p3);
-  }
-  .today-card::before {
-    content: '🦋'; position: absolute;
-    right: 20px; top: 14px; font-size: 48px; opacity: 0.2;
-  }
-  .today-label { color: var(--gold); font-weight: 800; font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em; margin-bottom: 6px; }
-  .today-day-name { color: white; font-family: 'Pacifico', cursive; font-size: 20px; margin-bottom: 16px; }
-  .today-tasks { display: flex; flex-direction: column; gap: 8px; }
-  .today-task {
-    background: rgba(255,255,255,0.1); border-radius: 12px;
-    padding: 10px 14px; display: flex; align-items: center; gap: 10px;
-    cursor: pointer; transition: background 0.15s; border: 1px solid rgba(255,255,255,0.1);
-  }
-  .today-task:hover { background: rgba(255,255,255,0.18); }
-  .today-task.done { opacity: 0.45; }
-  .today-check { width: 22px; height: 22px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.4); flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
-  .today-check.checked { background: var(--gold); border-color: var(--gold); }
-  .today-check.checked::after { content:'✓'; color: var(--p1); font-size: 11px; font-weight: 800; }
-  .today-task-text { color: white; font-size: 13px; font-weight: 600; flex: 1; }
-  .today-task.done .today-task-text { text-decoration: line-through; opacity: 0.6; }
-  .today-who { font-size: 11px; padding: 2px 9px; border-radius: 99px; font-weight: 700; flex-shrink: 0; }
-  .who-e { background: rgba(196,168,232,0.3); color: #DCC8F8; }
-  .who-p { background: rgba(168,232,212,0.3); color: #A8F0D8; }
-  .who-t { background: rgba(245,200,66,0.3); color: #FFE090; }
+  /* TODAY */
+  .today-card{background:linear-gradient(135deg,var(--p1),var(--p2));border-radius:20px;padding:20px;margin-bottom:18px;position:relative;overflow:hidden;border:1.5px solid var(--p3);}
+  .today-card::before{content:'🦋';position:absolute;right:20px;top:14px;font-size:44px;opacity:0.2;}
+  .today-label{color:var(--gold);font-weight:800;font-size:11px;text-transform:uppercase;letter-spacing:0.12em;margin-bottom:5px;}
+  .today-day-name{color:white;font-family:'Pacifico',cursive;font-size:18px;margin-bottom:14px;}
+  .today-tasks{display:flex;flex-direction:column;gap:7px;}
+  .today-task{background:rgba(255,255,255,0.1);border-radius:12px;padding:10px 14px;display:flex;align-items:center;gap:10px;cursor:pointer;transition:background 0.15s;border:1px solid rgba(255,255,255,0.1);}
+  .today-task:hover{background:rgba(255,255,255,0.18);}
+  .today-task.done{opacity:0.45;}
+  .today-check{width:22px;height:22px;border-radius:50%;border:2px solid rgba(255,255,255,0.4);flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+  .today-check.checked{background:var(--gold);border-color:var(--gold);}
+  .today-check.checked::after{content:'✓';color:var(--p1);font-size:11px;font-weight:800;}
+  .today-task-text{color:white;font-size:13px;font-weight:600;flex:1;}
+  .today-task.done .today-task-text{text-decoration:line-through;opacity:0.6;}
+  .today-who{font-size:11px;padding:2px 9px;border-radius:99px;font-weight:700;flex-shrink:0;}
+  .who-e{background:rgba(196,168,232,0.3);color:#DCC8F8;}
+  .who-p{background:rgba(168,232,212,0.3);color:#A8F0D8;}
+  .who-t{background:rgba(245,200,66,0.3);color:#FFE090;}
 
-  /* ── MILESTONES ── */
-  .milestone-list { display: flex; flex-direction: column; gap: 10px; }
-  .milestone {
-    background: white; border-radius: 16px; border: 1.5px solid var(--border);
-    padding: 14px 16px; display: flex; align-items: center; gap: 12px;
-  }
-  .milestone.done { background: linear-gradient(135deg, var(--p7), var(--lilac)); border-color: var(--p5); }
-  .milestone.upcoming { opacity: 0.55; }
-  .milestone-icon { font-size: 26px; width: 42px; text-align: center; flex-shrink: 0; }
-  .milestone-body { flex: 1; }
-  .milestone-name { font-weight: 800; font-size: 14px; }
-  .milestone-day { font-size: 12px; color: var(--text-soft); margin-top: 2px; font-weight: 600; }
-  .milestone-status { font-size: 11px; font-weight: 700; padding: 3px 11px; border-radius: 99px; flex-shrink: 0; }
-  .milestone.done .milestone-status { background: var(--p3); color: white; }
-  .milestone:not(.done):not(.upcoming) .milestone-status { background: var(--gold-light); color: #8A6010; }
-  .milestone.upcoming .milestone-status { background: var(--border); color: var(--text-soft); }
+  /* MILESTONES */
+  .milestone-list{display:flex;flex-direction:column;gap:8px;}
+  .milestone{background:white;border-radius:16px;border:1.5px solid var(--border);padding:12px 14px;display:flex;align-items:center;gap:12px;}
+  .milestone.done{background:linear-gradient(135deg,var(--p7),var(--lilac));border-color:var(--p5);}
+  .milestone.upcoming{opacity:0.55;}
+  .milestone-icon{font-size:24px;width:38px;text-align:center;flex-shrink:0;}
+  .milestone-body{flex:1;}
+  .milestone-name{font-weight:800;font-size:13px;}
+  .milestone-day{font-size:11px;color:var(--text-soft);margin-top:2px;font-weight:600;}
+  .milestone-status{font-size:11px;font-weight:700;padding:3px 11px;border-radius:99px;flex-shrink:0;}
+  .milestone.done .milestone-status{background:var(--p3);color:white;}
+  .milestone:not(.done):not(.upcoming) .milestone-status{background:var(--gold-light);color:#8A6010;}
+  .milestone.upcoming .milestone-status{background:var(--border);color:var(--text-soft);}
 
-  /* ── QUEST BOARD ── */
-  .week-section { margin-bottom: 30px; }
-  .week-banner {
-    background: linear-gradient(135deg, var(--p0), var(--p2));
-    color: white; border-radius: 16px;
-    padding: 16px 22px; margin-bottom: 16px;
-    display: flex; align-items: center; justify-content: space-between;
-    position: relative; overflow: hidden;
-    border: 1px solid var(--p3);
-  }
-  .week-banner::after { content: '🦋🦋'; position: absolute; right: 16px; bottom: 8px; font-size: 22px; opacity: 0.2; letter-spacing: 4px; }
-  .week-banner-title { font-family: 'Pacifico', cursive; font-size: 19px; }
-  .week-banner-sub { font-size: 12px; color: var(--lavender); margin-top: 3px; font-weight: 600; }
-  .week-banner-xp { color: var(--gold); font-weight: 800; font-size: 14px; }
+  /* QUEST BOARD */
+  .week-section{margin-bottom:28px;}
+  .week-banner{background:linear-gradient(135deg,var(--p0),var(--p2));color:white;border-radius:16px;padding:14px 20px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;position:relative;overflow:hidden;border:1px solid var(--p3);}
+  .week-banner::after{content:'🦋🦋';position:absolute;right:16px;bottom:8px;font-size:20px;opacity:0.2;letter-spacing:4px;}
+  .week-banner-title{font-family:'Pacifico',cursive;font-size:17px;}
+  .week-banner-sub{font-size:11px;color:var(--lavender);margin-top:2px;font-weight:600;}
+  .week-banner-xp{color:var(--gold);font-weight:800;font-size:13px;}
+  .day-group{margin-bottom:16px;}
+  .day-heading{font-size:11px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:var(--p3);margin-bottom:7px;display:flex;align-items:center;gap:8px;}
+  .day-heading::before{content:'🦋';font-size:13px;}
+  .day-heading::after{content:'';flex:1;height:1.5px;background:linear-gradient(90deg,var(--p5),transparent);border-radius:2px;}
 
-  .day-group { margin-bottom: 18px; }
-  .day-heading {
-    font-size: 11px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase;
-    color: var(--p3); margin-bottom: 8px; display: flex; align-items: center; gap: 8px;
-  }
-  .day-heading::before { content: '🦋'; font-size: 13px; }
-  .day-heading::after { content:''; flex:1; height:1.5px; background: linear-gradient(90deg, var(--p5), transparent); border-radius: 2px; }
+  .task-row{background:white;border-radius:14px;border:1.5px solid var(--border);margin-bottom:6px;transition:transform 0.12s,box-shadow 0.12s;}
+  .task-row:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(75,47,138,0.12);}
+  .task-row.done{background:var(--p7);border-color:var(--p6);}
+  .task-row.boss{border-color:var(--gold);background:var(--gold-light);}
+  .task-row.boss.done{background:linear-gradient(135deg,var(--p7),var(--gold-light));border-color:var(--p5);}
+  .task-main{padding:11px 14px;display:flex;align-items:flex-start;gap:11px;cursor:pointer;}
+  .task-check{width:24px;height:24px;border-radius:50%;border:2px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all 0.25s;margin-top:1px;}
+  .task-check.checked{background:var(--p3);border-color:var(--p3);}
+  .task-check.checked::after{content:'✓';color:white;font-size:12px;font-weight:800;}
+  .task-row.boss .task-check{border-color:var(--gold);}
+  .task-row.boss .task-check.checked{background:var(--gold);border-color:var(--gold);}
+  .task-row.boss .task-check.checked::after{color:var(--p1);}
+  .task-content{flex:1;min-width:0;}
+  .task-text{font-size:13px;font-weight:600;line-height:1.4;color:var(--text);}
+  .task-row.done .task-text{text-decoration:line-through;color:var(--text-soft);}
+  .task-badges{display:flex;gap:4px;margin-top:4px;flex-wrap:wrap;align-items:center;}
+  .tbadge{font-size:11px;font-weight:700;padding:2px 8px;border-radius:99px;}
+  .tbadge-e{background:var(--p6);color:var(--p2);}
+  .tbadge-p{background:var(--mint-light);color:#1A5A48;}
+  .tbadge-t{background:var(--gold-light);color:#7A5008;}
+  .tbadge-xp{background:var(--bg);color:var(--text-soft);border:1px solid var(--border);}
+  .tbadge-boss{background:var(--gold);color:var(--p1);}
+  .task-expand-btn{background:none;border:none;cursor:pointer;font-size:11px;font-weight:700;color:var(--p4);padding:2px 6px;border-radius:6px;transition:background 0.15s;}
+  .task-expand-btn:hover{background:var(--p6);}
+  .completed-by{font-size:11px;color:var(--p4);font-weight:600;margin-top:3px;}
 
-  .task-row {
-    background: white; border-radius: 14px; border: 1.5px solid var(--border);
-    padding: 12px 16px; margin-bottom: 6px;
-    display: flex; align-items: flex-start; gap: 12px;
-    cursor: pointer; transition: transform 0.12s, box-shadow 0.12s;
-  }
-  .task-row:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(75,47,138,0.12); }
-  .task-row.done { background: var(--p7); border-color: var(--p6); }
-  .task-row.boss { border-color: var(--gold); background: var(--gold-light); }
-  .task-row.boss.done { background: linear-gradient(135deg, var(--p7), var(--gold-light)); border-color: var(--p5); }
-  .task-check {
-    width: 26px; height: 26px; border-radius: 50%;
-    border: 2px solid var(--border); flex-shrink: 0;
-    display: flex; align-items: center; justify-content: center;
-    transition: all 0.25s; margin-top: 1px;
-  }
-  .task-check.checked { background: var(--p3); border-color: var(--p3); }
-  .task-check.checked::after { content:'✓'; color:white; font-size:13px; font-weight:800; }
-  .task-row.boss .task-check { border-color: var(--gold); }
-  .task-row.boss .task-check.checked { background: var(--gold); border-color: var(--gold); }
-  .task-row.boss .task-check.checked::after { color: var(--p1); }
-  .task-content { flex:1; min-width:0; }
-  .task-text { font-size: 14px; font-weight: 600; line-height: 1.4; color: var(--text); }
-  .task-row.done .task-text { text-decoration: line-through; color: var(--text-soft); }
-  .task-badges { display: flex; gap: 5px; margin-top: 5px; flex-wrap: wrap; align-items: center; }
-  .tbadge { font-size: 11px; font-weight: 700; padding: 2px 9px; border-radius: 99px; }
-  .tbadge-e { background: var(--p6); color: var(--p2); }
-  .tbadge-p { background: var(--mint-light); color: #1A5A48; }
-  .tbadge-t { background: var(--gold-light); color: #7A5008; }
-  .tbadge-xp { background: var(--bg); color: var(--text-soft); border: 1px solid var(--border); }
-  .tbadge-boss { background: var(--gold); color: var(--p1); }
+  /* TASK PANEL (notes + photo) */
+  .task-panel{border-top:1px solid var(--border);padding:12px 14px;background:rgba(248,242,255,0.6);}
+  .task-panel-tabs{display:flex;gap:6px;margin-bottom:10px;}
+  .tp-tab{background:none;border:1.5px solid var(--border);border-radius:8px;padding:5px 12px;font-family:'Nunito',sans-serif;font-size:11px;font-weight:700;color:var(--text-soft);cursor:pointer;transition:all 0.15s;}
+  .tp-tab.active{background:var(--p3);border-color:var(--p3);color:white;}
+  .tp-section{display:none;}
+  .tp-section.active{display:block;}
 
-  /* ── GUIDES ── */
-  .guide-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-  .guide-card {
-    background: white; border-radius: 18px; border: 1.5px solid var(--border);
-    padding: 22px; cursor: pointer; transition: transform 0.15s, box-shadow 0.15s;
-    position: relative; overflow: hidden;
-  }
-  .guide-card::after { content: '🦋'; position: absolute; right: 14px; bottom: 10px; font-size: 28px; opacity: 0.1; }
-  .guide-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(75,47,138,0.14); }
-  .guide-icon { font-size: 34px; margin-bottom: 10px; }
-  .guide-title { font-weight: 800; font-size: 15px; margin-bottom: 4px; color: var(--text); }
-  .guide-sub { font-size: 12px; color: var(--text-soft); font-weight: 600; margin-bottom: 12px; }
-  .guide-tags { display: flex; gap: 5px; flex-wrap: wrap; }
-  .guide-tag { font-size: 11px; font-weight: 700; padding: 2px 9px; border-radius: 99px; background: var(--p6); color: var(--p2); }
+  /* NOTES */
+  .note-list{display:flex;flex-direction:column;gap:8px;margin-bottom:10px;max-height:200px;overflow-y:auto;}
+  .note-item{background:white;border-radius:10px;padding:9px 12px;border:1px solid var(--border);}
+  .note-author{font-size:11px;font-weight:800;color:var(--p3);}
+  .note-author.emma{color:#C0407A;}
+  .note-author.parents{color:#1A8A60;}
+  .note-time{font-size:10px;color:var(--text-soft);font-weight:600;margin-left:6px;}
+  .note-body{font-size:13px;font-weight:600;margin-top:3px;line-height:1.4;}
+  .note-input-row{display:flex;gap:8px;}
+  .note-input{flex:1;padding:9px 12px;border-radius:10px;border:1.5px solid var(--border);font-family:'Nunito',sans-serif;font-size:13px;font-weight:600;background:white;resize:none;outline:none;transition:border-color 0.2s;}
+  .note-input:focus{border-color:var(--p4);}
+  .note-send{background:var(--p3);color:white;border:none;border-radius:10px;padding:9px 14px;font-family:'Nunito',sans-serif;font-weight:800;font-size:13px;cursor:pointer;transition:background 0.2s;white-space:nowrap;}
+  .note-send:hover{background:var(--p2);}
+  .note-send:disabled{opacity:0.5;cursor:not-allowed;}
 
-  .guide-detail { display: none; }
-  .guide-detail.open { display: block; }
-  .guide-full { background: white; border-radius: 18px; border: 1.5px solid var(--border); padding: 26px; margin-top: 16px; }
-  .guide-full-title { font-family: 'Pacifico', cursive; font-size: 22px; color: var(--p2); margin-bottom: 18px; }
-  .guide-step { display: flex; gap: 12px; margin-bottom: 14px; align-items: flex-start; }
-  .guide-step-num {
-    width: 30px; height: 30px; border-radius: 50%; background: linear-gradient(135deg, var(--p3), var(--p4));
-    color: white; font-weight: 800; font-size: 13px;
-    display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px;
-  }
-  .guide-step-text { font-size: 14px; font-weight: 600; line-height: 1.5; padding-top: 5px; }
-  .guide-tip {
-    background: var(--gold-light); border-left: 3px solid var(--gold);
-    border-radius: 0 12px 12px 0; padding: 13px 16px; margin-top: 14px; font-size: 13px; font-weight: 600;
-  }
-  .guide-tip-label { font-weight: 800; color: #7A5008; margin-bottom: 3px; }
-  .guide-warning {
-    background: var(--rose-light); border-left: 3px solid var(--rose);
-    border-radius: 0 12px 12px 0; padding: 13px 16px; margin-top: 10px; font-size: 13px; font-weight: 600;
-  }
-  .guide-warning-label { font-weight: 800; color: #8A2060; margin-bottom: 3px; }
-  .back-btn {
-    background: var(--p6); color: var(--p2); border: none; border-radius: 12px;
-    padding: 10px 18px; font-family: 'Nunito', sans-serif; font-weight: 800; font-size: 13px;
-    cursor: pointer; margin-bottom: 16px; display: inline-flex; align-items: center; gap: 6px;
-    transition: background 0.15s;
-  }
-  .back-btn:hover { background: var(--p5); color: white; }
+  /* PHOTOS */
+  .photo-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px;}
+  .photo-thumb{aspect-ratio:1;border-radius:10px;overflow:hidden;background:var(--p6);cursor:pointer;position:relative;}
+  .photo-thumb img{width:100%;height:100%;object-fit:cover;}
+  .photo-caption{position:absolute;bottom:0;left:0;right:0;background:rgba(26,10,46,0.75);color:white;font-size:10px;font-weight:700;padding:4px 6px;line-height:1.2;}
+  .photo-uploader{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+  .photo-file-btn{background:var(--p6);color:var(--p2);border:1.5px solid var(--p5);border-radius:10px;padding:8px 14px;font-family:'Nunito',sans-serif;font-weight:800;font-size:12px;cursor:pointer;transition:background 0.15s;}
+  .photo-file-btn:hover{background:var(--p5);color:white;}
+  .photo-caption-input{flex:1;min-width:100px;padding:8px 11px;border-radius:10px;border:1.5px solid var(--border);font-family:'Nunito',sans-serif;font-size:12px;font-weight:600;outline:none;}
+  .photo-caption-input:focus{border-color:var(--p4);}
+  .photo-upload-btn{background:var(--p3);color:white;border:none;border-radius:10px;padding:8px 14px;font-family:'Nunito',sans-serif;font-weight:800;font-size:12px;cursor:pointer;}
+  .photo-upload-btn:disabled{opacity:0.5;cursor:not-allowed;}
+  .upload-progress{font-size:12px;font-weight:700;color:var(--p3);}
 
-  /* ── SHOPPING ── */
-  .shop-section { margin-bottom: 24px; }
-  .shop-section-title { font-weight: 800; font-size: 16px; margin-bottom: 10px; color: var(--p2); display: flex; align-items: center; gap: 7px; }
-  .shop-item {
-    background: white; border-radius: 14px; border: 1.5px solid var(--border);
-    padding: 12px 16px; margin-bottom: 6px;
-    display: flex; align-items: center; gap: 12px; cursor: pointer; transition: background 0.15s;
-  }
-  .shop-item:hover { background: var(--p7); }
-  .shop-check { width: 22px; height: 22px; border-radius: 7px; border: 2px solid var(--border); flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
-  .shop-check.checked { background: var(--p3); border-color: var(--p3); }
-  .shop-check.checked::after { content:'✓'; color:white; font-size:12px; font-weight:800; }
-  .shop-name { flex: 1; font-weight: 600; font-size: 14px; }
-  .shop-item.done .shop-name { text-decoration: line-through; color: var(--text-soft); }
-  .shop-note { font-size: 12px; color: var(--text-soft); font-weight: 600; }
-  .shop-priority { font-size: 11px; font-weight: 700; padding: 2px 9px; border-radius: 99px; flex-shrink: 0; }
-  .prio-urgent { background: var(--rose-light); color: #8A2060; }
-  .prio-before { background: var(--gold-light); color: #7A5008; }
-  .prio-nice   { background: var(--p6); color: var(--p2); }
+  /* GUIDES */
+  .guide-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  .guide-card{background:white;border-radius:18px;border:1.5px solid var(--border);padding:20px;cursor:pointer;transition:transform 0.15s,box-shadow 0.15s;position:relative;overflow:hidden;}
+  .guide-card::after{content:'🦋';position:absolute;right:12px;bottom:8px;font-size:24px;opacity:0.1;}
+  .guide-card:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(75,47,138,0.14);}
+  .guide-icon{font-size:30px;margin-bottom:8px;}
+  .guide-title{font-weight:800;font-size:14px;margin-bottom:3px;color:var(--text);}
+  .guide-sub{font-size:12px;color:var(--text-soft);font-weight:600;margin-bottom:10px;}
+  .guide-tags{display:flex;gap:4px;flex-wrap:wrap;}
+  .guide-tag{font-size:11px;font-weight:700;padding:2px 9px;border-radius:99px;background:var(--p6);color:var(--p2);}
+  .guide-detail{display:none;}
+  .guide-detail.open{display:block;}
+  .guide-full{background:white;border-radius:18px;border:1.5px solid var(--border);padding:24px;margin-top:14px;}
+  .guide-full-title{font-family:'Pacifico',cursive;font-size:20px;color:var(--p2);margin-bottom:16px;}
+  .guide-step{display:flex;gap:12px;margin-bottom:12px;align-items:flex-start;}
+  .guide-step-num{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--p3),var(--p4));color:white;font-weight:800;font-size:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+  .guide-step-text{font-size:13px;font-weight:600;line-height:1.5;padding-top:4px;}
+  .guide-tip{background:var(--gold-light);border-left:3px solid var(--gold);border-radius:0 12px 12px 0;padding:12px 14px;margin-top:12px;font-size:13px;font-weight:600;}
+  .guide-tip-label{font-weight:800;color:#7A5008;margin-bottom:3px;}
+  .guide-warning{background:var(--rose-light);border-left:3px solid var(--rose);border-radius:0 12px 12px 0;padding:12px 14px;margin-top:8px;font-size:13px;font-weight:600;}
+  .guide-warning-label{font-weight:800;color:#8A2060;margin-bottom:3px;}
+  .back-btn{background:var(--p6);color:var(--p2);border:none;border-radius:12px;padding:9px 16px;font-family:'Nunito',sans-serif;font-weight:800;font-size:13px;cursor:pointer;margin-bottom:14px;display:inline-flex;align-items:center;gap:6px;transition:background 0.15s;}
+  .back-btn:hover{background:var(--p5);color:white;}
 
-  /* ── ROLES ── */
-  .role-cards { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; }
-  .role-card { border-radius: 20px; padding: 22px; text-align: center; border: 1.5px solid transparent; position: relative; overflow: hidden; }
-  .role-card::after { content: '🦋'; position: absolute; right: 12px; top: 10px; font-size: 22px; opacity: 0.15; }
-  .role-card.elsie   { background: linear-gradient(145deg, var(--p7), var(--lilac)); border-color: var(--p5); }
-  .role-card.parents { background: linear-gradient(145deg, var(--mint-light), #D8F8F0); border-color: var(--mint); }
-  .role-card.emma    { background: linear-gradient(145deg, var(--rose-light), #FFE8F4); border-color: var(--rose); }
-  .role-avatar { font-size: 42px; margin-bottom: 8px; }
-  .role-name { font-family: 'Pacifico', cursive; font-size: 18px; margin-bottom: 4px; }
-  .role-card.elsie   .role-name { color: var(--p2); }
-  .role-card.parents .role-name { color: #1A5A48; }
-  .role-card.emma    .role-name { color: #8A2060; }
-  .role-title { font-size: 11px; font-weight: 700; opacity: 0.6; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.08em; }
-  .role-powers { text-align: left; }
-  .role-power { font-size: 13px; font-weight: 600; margin-bottom: 5px; display: flex; align-items: flex-start; gap: 7px; line-height: 1.4; }
-  .role-power::before { content: '🦋'; font-size: 11px; flex-shrink: 0; margin-top: 2px; }
-  .role-xp-badge { margin-top: 13px; font-size: 13px; font-weight: 700; padding: 5px 14px; border-radius: 99px; background: rgba(255,255,255,0.75); }
+  /* SHOPPING */
+  .shop-section{margin-bottom:22px;}
+  .shop-section-title{font-weight:800;font-size:15px;margin-bottom:8px;color:var(--p2);}
+  .shop-item{background:white;border-radius:14px;border:1.5px solid var(--border);padding:11px 14px;margin-bottom:5px;display:flex;align-items:center;gap:11px;cursor:pointer;transition:background 0.15s;}
+  .shop-item:hover{background:var(--p7);}
+  .shop-check{width:20px;height:20px;border-radius:6px;border:2px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all 0.2s;}
+  .shop-check.checked{background:var(--p3);border-color:var(--p3);}
+  .shop-check.checked::after{content:'✓';color:white;font-size:11px;font-weight:800;}
+  .shop-name{flex:1;font-weight:600;font-size:13px;}
+  .shop-item.done .shop-name{text-decoration:line-through;color:var(--text-soft);}
+  .shop-note{font-size:11px;color:var(--text-soft);font-weight:600;}
+  .shop-priority{font-size:11px;font-weight:700;padding:2px 9px;border-radius:99px;flex-shrink:0;}
+  .prio-urgent{background:var(--rose-light);color:#8A2060;}
+  .prio-before{background:var(--gold-light);color:#7A5008;}
+  .prio-nice{background:var(--p6);color:var(--p2);}
 
-  .rules-card {
-    background: linear-gradient(135deg, var(--p0), var(--p1));
-    border-radius: 20px; padding: 26px; margin-top: 20px; color: white;
-    border: 1px solid var(--p3); position: relative; overflow: hidden;
-  }
-  .rules-card::before { content: '🦋'; position: absolute; right: 24px; top: 20px; font-size: 56px; opacity: 0.1; }
-  .rules-title { font-family: 'Pacifico', cursive; font-size: 22px; color: var(--gold); margin-bottom: 18px; }
-  .rule-item { display: flex; gap: 12px; margin-bottom: 13px; align-items: flex-start; }
-  .rule-num { width: 26px; height: 26px; border-radius: 50%; background: var(--gold); color: var(--p1); font-weight: 800; font-size: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
-  .rule-text { font-size: 14px; font-weight: 600; line-height: 1.45; color: rgba(255,255,255,0.9); }
+  /* GALLERY TAB */
+  .gallery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;}
+  .gallery-item{border-radius:14px;overflow:hidden;background:white;border:1.5px solid var(--border);cursor:pointer;transition:transform 0.15s,box-shadow 0.15s;}
+  .gallery-item:hover{transform:translateY(-3px);box-shadow:0 8px 24px rgba(75,47,138,0.15);}
+  .gallery-img{width:100%;aspect-ratio:1;object-fit:cover;}
+  .gallery-meta{padding:8px 10px;}
+  .gallery-cap{font-size:12px;font-weight:700;line-height:1.3;}
+  .gallery-info{font-size:11px;color:var(--text-soft);font-weight:600;margin-top:2px;}
+  .gallery-empty{text-align:center;padding:60px 20px;color:var(--text-soft);}
+  .gallery-empty-icon{font-size:52px;margin-bottom:12px;}
+  .gallery-empty-text{font-size:15px;font-weight:700;}
+  .gallery-empty-sub{font-size:13px;font-weight:600;margin-top:4px;}
 
-  /* ── BUTTERFLY SVG INLINE ── */
-  .bf-svg { display: inline-block; }
+  /* LIGHTBOX */
+  .lightbox{position:fixed;inset:0;background:rgba(26,10,46,0.92);z-index:5000;display:none;align-items:center;justify-content:center;padding:20px;}
+  .lightbox.open{display:flex;}
+  .lightbox-img{max-width:90vw;max-height:80vh;border-radius:16px;object-fit:contain;}
+  .lightbox-close{position:absolute;top:20px;right:24px;background:rgba(255,255,255,0.15);border:none;color:white;font-size:22px;width:40px;height:40px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+  .lightbox-cap{position:absolute;bottom:24px;left:50%;transform:translateX(-50%);background:rgba(26,10,46,0.8);color:white;padding:8px 18px;border-radius:20px;font-size:13px;font-weight:700;white-space:nowrap;}
 
-  @media (max-width: 600px) {
-    .dash-grid, .week-cards { grid-template-columns: 1fr 1fr; }
-    .guide-grid, .role-cards { grid-template-columns: 1fr; }
-    .hq-title { font-size: 28px; }
-    .header-top { flex-direction: column; }
-    .header-xp-block { width: 100%; }
-    .tab-btn { padding: 12px 14px; font-size: 12px; }
+  /* ROLES */
+  .role-cards{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
+  .role-card{border-radius:20px;padding:20px;text-align:center;border:1.5px solid transparent;position:relative;overflow:hidden;}
+  .role-card::after{content:'🦋';position:absolute;right:10px;top:8px;font-size:20px;opacity:0.15;}
+  .role-card.elsie{background:linear-gradient(145deg,var(--p7),var(--lilac));border-color:var(--p5);}
+  .role-card.parents{background:linear-gradient(145deg,var(--mint-light),#D8F8F0);border-color:var(--mint);}
+  .role-card.emma{background:linear-gradient(145deg,var(--rose-light),#FFE8F4);border-color:var(--rose);}
+  .role-avatar{font-size:38px;margin-bottom:7px;}
+  .role-name{font-family:'Pacifico',cursive;font-size:16px;margin-bottom:3px;}
+  .role-card.elsie .role-name{color:var(--p2);}
+  .role-card.parents .role-name{color:#1A5A48;}
+  .role-card.emma .role-name{color:#8A2060;}
+  .role-title{font-size:10px;font-weight:700;opacity:0.6;margin-bottom:10px;text-transform:uppercase;letter-spacing:0.08em;}
+  .role-powers{text-align:left;}
+  .role-power{font-size:12px;font-weight:600;margin-bottom:4px;display:flex;align-items:flex-start;gap:6px;line-height:1.4;}
+  .role-power::before{content:'🦋';font-size:10px;flex-shrink:0;margin-top:2px;}
+  .role-xp-badge{margin-top:11px;font-size:12px;font-weight:700;padding:4px 12px;border-radius:99px;background:rgba(255,255,255,0.75);}
+  .rules-card{background:linear-gradient(135deg,var(--p0),var(--p1));border-radius:20px;padding:24px;margin-top:18px;color:white;border:1px solid var(--p3);position:relative;overflow:hidden;}
+  .rules-card::before{content:'🦋';position:absolute;right:22px;top:18px;font-size:52px;opacity:0.1;}
+  .rules-title{font-family:'Pacifico',cursive;font-size:20px;color:var(--gold);margin-bottom:16px;}
+  .rule-item{display:flex;gap:12px;margin-bottom:12px;align-items:flex-start;}
+  .rule-num{width:26px;height:26px;border-radius:50%;background:var(--gold);color:var(--p1);font-weight:800;font-size:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+  .rule-text{font-size:13px;font-weight:600;line-height:1.5;padding-top:4px;}
+
+  /* LOADING */
+  .loading-spinner{display:inline-block;width:18px;height:18px;border:3px solid var(--p6);border-top-color:var(--p3);border-radius:50%;animation:spin 0.7s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .empty-notes{text-align:center;padding:16px;color:var(--text-soft);font-size:13px;font-weight:600;}
+
+  @media(max-width:600px){
+    .hq-title{font-size:26px;}
+    .dash-grid,.week-cards{grid-template-columns:1fr;}
+    .guide-grid{grid-template-columns:1fr;}
+    .role-cards{grid-template-columns:1fr;}
+    .header-right{min-width:180px;}
+    .photo-grid{grid-template-columns:repeat(2,1fr);}
   }
 </style>
 </head>
 <body>
 
-<!-- FLOATING BUTTERFLIES (page background) -->
-<div id="float-bf"></div>
+<!-- IDENTITY PICKER -->
+<div class="id-overlay" id="id-overlay">
+  <div class="id-box">
+    <div style="font-size:52px;margin-bottom:12px;">🦋</div>
+    <div class="id-title">Quest HQ</div>
+    <div class="id-sub">Who's joining the quest today?</div>
+    <button class="id-btn elsie" onclick="setIdentity('Elsie')">
+      <span class="id-btn-icon">👑</span>
+      <span class="id-btn-text"><div class="id-btn-name">Elsie</div><div class="id-btn-role">Chief Designer</div></span>
+    </button>
+    <button class="id-btn parents" onclick="setIdentity('Parents')">
+      <span class="id-btn-icon">🔧</span>
+      <span class="id-btn-text"><div class="id-btn-name">Parents</div><div class="id-btn-role">Master Builders</div></span>
+    </button>
+    <button class="id-btn emma" onclick="setIdentity('Emma')">
+      <span class="id-btn-icon">🌟</span>
+      <span class="id-btn-text"><div class="id-btn-name">Emma</div><div class="id-btn-role">Special Correspondent</div></span>
+    </button>
+  </div>
+</div>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+  <img class="lightbox-img" id="lightbox-img" src="" alt="">
+  <div class="lightbox-cap" id="lightbox-cap"></div>
+</div>
+
+<!-- FLOATING BUTTERFLIES -->
+<div id="float-bf" style="position:fixed;inset:0;pointer-events:none;z-index:0;"></div>
 
 <!-- HEADER -->
 <div class="hq-header">
@@ -390,22 +352,21 @@
   <div class="header-inner">
     <div class="header-top">
       <div>
-        <div class="hq-badge">🦋 Project HQ — Easter Holidays</div>
-        <div class="hq-title">Elsie's Room<br><span class="gold">Makeover Quest</span></div>
-        <div class="hq-sub">Two weeks · Purple walls · LED magic · Butterflies everywhere ✨</div>
+        <div class="hq-badge"><span class="sync-dot" id="sync-dot"></span>Live Quest HQ</div>
+        <div class="hq-title">Elsie's Room <span class="gold">Quest</span> 🦋</div>
+        <div class="hq-sub">Easter Holiday Makeover · 14 Days · 198 XP to unlock</div>
       </div>
-      <div class="header-xp-block">
-        <div class="xp-label-row">
-          <span class="xp-title">⚡ TOTAL XP</span>
-          <span class="xp-count" id="hdr-xp">0 / 198</span>
-        </div>
-        <div class="xp-track"><div class="xp-fill" id="hdr-fill" style="width:0%"></div></div>
-        <div class="xp-butterflies">
-          <span class="xp-bf" id="bf1">🦋</span>
-          <span class="xp-bf" id="bf2">🦋</span>
-          <span class="xp-bf" id="bf3">🦋</span>
-          <span class="xp-bf" id="bf4">🦋</span>
-          <span class="xp-bf" id="bf5">🦋</span>
+      <div class="header-right">
+        <button class="identity-pill" onclick="changeIdentity()" id="identity-pill">👋 Loading...</button>
+        <div class="header-xp-block">
+          <div class="xp-label-row">
+            <span class="xp-title">⚡ QUEST XP</span>
+            <span class="xp-count" id="hdr-xp">0 / 198</span>
+          </div>
+          <div class="xp-track"><div class="xp-fill" id="hdr-fill" style="width:0%"></div></div>
+          <div class="xp-butterflies">
+            <span class="xp-bf" id="bf1">🦋</span><span class="xp-bf" id="bf2">🦋</span><span class="xp-bf" id="bf3">🦋</span><span class="xp-bf" id="bf4">🦋</span><span class="xp-bf" id="bf5">🦋</span>
+          </div>
         </div>
       </div>
     </div>
@@ -413,59 +374,58 @@
 </div>
 
 <!-- NAV TABS -->
-<div class="nav-tabs">
-  <button class="tab-btn active" onclick="showTab('dashboard',this)"><span class="tab-icon">🏠</span>Dashboard</button>
-  <button class="tab-btn" onclick="showTab('quest',this)"><span class="tab-icon">📋</span>Quest Board</button>
-  <button class="tab-btn" onclick="showTab('guides',this)"><span class="tab-icon">📖</span>How-To Guides</button>
-  <button class="tab-btn" onclick="showTab('shopping',this)"><span class="tab-icon">🛒</span>Shopping List</button>
-  <button class="tab-btn" onclick="showTab('crew',this)"><span class="tab-icon">🦋</span>The Crew</button>
-</div>
+<nav class="nav-tabs">
+  <button class="tab-btn active" onclick="showTab('dash',this)">🏠 Dashboard</button>
+  <button class="tab-btn" onclick="showTab('quest',this)">⚔️ Quest Board</button>
+  <button class="tab-btn" onclick="showTab('gallery',this)">📸 Gallery</button>
+  <button class="tab-btn" onclick="showTab('guides',this)">📖 Guides</button>
+  <button class="tab-btn" onclick="showTab('shopping',this)">🛒 Shopping</button>
+  <button class="tab-btn" onclick="showTab('crew',this)">👥 The Crew</button>
+</nav>
 
 <div class="main">
 
   <!-- DASHBOARD -->
-  <div class="panel active" id="panel-dashboard">
-    <div id="today-block"></div>
-
+  <div class="panel active" id="panel-dash">
     <div class="dash-grid">
       <div class="stat-card s-purple" data-bf="🦋">
         <div class="stat-icon">✅</div>
         <div class="stat-num" id="stat-done">0</div>
-        <div class="stat-desc">tasks completed</div>
+        <div class="stat-desc">Tasks completed</div>
       </div>
-      <div class="stat-card s-gold" data-bf="⭐">
+      <div class="stat-card s-gold" data-bf="⚡">
         <div class="stat-icon">⚡</div>
         <div class="stat-num" id="stat-xp">0</div>
         <div class="stat-desc">XP earned so far</div>
       </div>
-      <div class="stat-card s-rose" data-bf="🌸">
+      <div class="stat-card s-rose" data-bf="🏆">
         <div class="stat-icon">🏆</div>
         <div class="stat-num" id="stat-boss">0/10</div>
-        <div class="stat-desc">boss tasks conquered</div>
+        <div class="stat-desc">Boss tasks conquered</div>
       </div>
-      <div class="stat-card s-mint" data-bf="🦋">
-        <div class="stat-icon">📅</div>
-        <div class="stat-num" id="stat-days">14</div>
-        <div class="stat-desc">days in the quest</div>
+      <div class="stat-card s-mint" data-bf="📸">
+        <div class="stat-icon">📸</div>
+        <div class="stat-num" id="stat-photos">0</div>
+        <div class="stat-desc">Progress photos</div>
       </div>
     </div>
-
     <div class="week-cards">
       <div class="week-card">
-        <div class="week-card-title" style="color:var(--p2)">Week 1 — Prep & Build</div>
-        <div class="week-card-sub">Paint, fill, prime & assemble everything</div>
+        <div class="week-card-title">Week 1 — Prep & Build</div>
+        <div class="week-card-sub">Fill, prime, paint & furniture</div>
         <div class="mini-bar-bg"><div class="mini-bar-fill w1" id="w1-bar" style="width:0%"></div></div>
         <div class="week-count" id="w1-count">0 / 23 tasks done</div>
       </div>
       <div class="week-card">
-        <div class="week-card-title" style="color:#C040A0">Week 2 — Decorate & Reveal</div>
-        <div class="week-card-sub">Lights, styling & the grand unveiling</div>
+        <div class="week-card-title">Week 2 — Decorate & Reveal</div>
+        <div class="week-card-sub">Lights, styling & grand reveal</div>
         <div class="mini-bar-bg"><div class="mini-bar-fill w2" id="w2-bar" style="width:0%"></div></div>
         <div class="week-count" id="w2-count">0 / 25 tasks done</div>
       </div>
     </div>
-
-    <div class="section-title">🦋 Big Milestones</div>
+    <div class="section-title">🦋 Today's Quests</div>
+    <div id="today-block"></div>
+    <div class="section-title">🦋 Milestones</div>
     <div class="milestone-list" id="milestone-list"></div>
   </div>
 
@@ -474,11 +434,25 @@
     <div id="quest-board"></div>
   </div>
 
+  <!-- GALLERY -->
+  <div class="panel" id="panel-gallery">
+    <div class="section-title">📸 Progress Photos</div>
+    <div id="gallery-container">
+      <div class="gallery-empty">
+        <div class="gallery-empty-icon">📷</div>
+        <div class="gallery-empty-text">No photos yet!</div>
+        <div class="gallery-empty-sub">Upload photos on tasks in the Quest Board</div>
+      </div>
+    </div>
+  </div>
+
   <!-- GUIDES -->
   <div class="panel" id="panel-guides">
-    <div id="guides-list"><div class="guide-grid" id="guide-grid"></div></div>
+    <div id="guides-list">
+      <div class="guide-grid" id="guide-grid"></div>
+    </div>
     <div class="guide-detail" id="guide-detail">
-      <button class="back-btn" onclick="closeGuide()">🦋 Back to guides</button>
+      <button class="back-btn" onclick="closeGuide()">← Back to Guides</button>
       <div class="guide-full" id="guide-content"></div>
     </div>
   </div>
@@ -546,138 +520,263 @@
 </div><!-- /main -->
 
 <script>
+// ── SUPABASE ──────────────────────────────────────────────────────────────
+const SUPA_URL = 'https://sehkmskmyslpmzsvmgnx.supabase.co';
+const SUPA_KEY = 'sb_publishable_0n5rST-CoXKH5FTwnzPHkQ_fK8a1Mjn';
+const { createClient } = supabase;
+const db = createClient(SUPA_URL, SUPA_KEY);
+
+// ── IDENTITY ──────────────────────────────────────────────────────────────
+let currentUser = localStorage.getItem('eq_user') || null;
+
+function setIdentity(name) {
+  currentUser = name;
+  localStorage.setItem('eq_user', name);
+  document.getElementById('id-overlay').style.display = 'none';
+  document.getElementById('identity-pill').textContent = 
+    name === 'Elsie' ? '👑 Elsie' : name === 'Parents' ? '🔧 Parents' : '🌟 Emma';
+  init();
+}
+
+function changeIdentity() {
+  currentUser = null;
+  localStorage.removeItem('eq_user');
+  document.getElementById('id-overlay').style.display = 'flex';
+}
+
+if (currentUser) {
+  document.getElementById('id-overlay').style.display = 'none';
+  document.getElementById('identity-pill').textContent = 
+    currentUser === 'Elsie' ? '👑 Elsie' : currentUser === 'Parents' ? '🔧 Parents' : '🌟 Emma';
+}
+
 // ── DATA ──────────────────────────────────────────────────────────────────
 const TASKS = [
-  { w:1, day:"Mon Day 1 — Quest Launch", id:1,  t:"Hold a family quest briefing: the plan, the rules, the ban on early peeks", who:"t", boss:false, xp:3 },
-  { w:1, day:null, id:2,  t:"Elsie writes and decorates the 'Quest Rules' poster for the bedroom door", who:"e", boss:false, xp:4 },
-  { w:1, day:null, id:3,  t:"Take 'before' photos of every corner of the room", who:"t", boss:false, xp:3 },
-  { w:1, day:null, id:4,  t:"Empty the room completely — pack everything into labelled boxes", who:"t", boss:false, xp:5 },
-  { w:1, day:"Tue Day 2 — Crack-Filling & Prep", id:5,  t:"Inspect all four walls and mark every crack or dent with a sticky dot", who:"e", boss:false, xp:4 },
-  { w:1, day:null, id:6,  t:"Fill all cracks and holes with flexible decorator's filler; sand smooth once dry", who:"p", boss:false, xp:6 },
-  { w:1, day:null, id:7,  t:"Tape around skirting boards, ceiling edges, and window frames", who:"p", boss:false, xp:5 },
-  { w:1, day:null, id:8,  t:"Elsie paints test swatches of purple shades on the wall — lives with them overnight to choose", who:"e", boss:true, xp:6 },
-  { w:1, day:"Wed Day 3 — White Coat", id:9,  t:"Apply a coat of white primer/undercoat to all walls", who:"p", boss:false, xp:6 },
-  { w:1, day:null, id:10, t:"While walls dry: Elsie sorts all the Ikea vanity parts into labelled cups", who:"e", boss:false, xp:4 },
-  { w:1, day:null, id:11, t:"Begin building the Ikea vanity desk (get to step 10 today)", who:"p", boss:false, xp:6 },
-  { w:1, day:null, id:12, t:"Elsie is official instruction reader and bolt fetcher for the build", who:"e", boss:false, xp:4 },
-  { w:1, day:"Thu Day 4 — Purple Day!", id:13, t:"Apply first coat of purple to all walls — cut in edges carefully", who:"p", boss:false, xp:7 },
-  { w:1, day:null, id:14, t:"Elsie paints her own section of wall (lower half, supervised) — her permanent mark!", who:"t", boss:true, xp:8 },
-  { w:1, day:null, id:15, t:"Make a paint record card: dab the colour, write the name and brand for touch-ups", who:"e", boss:false, xp:3 },
-  { w:1, day:"Fri Day 5 — Second Coat & More Building", id:16, t:"Apply second and final purple coat — leave walls to cure fully", who:"p", boss:false, xp:6 },
-  { w:1, day:null, id:17, t:"Finish building the Ikea vanity desk completely", who:"p", boss:true, xp:7 },
-  { w:1, day:null, id:18, t:"Build Emma's bedside table", who:"p", boss:false, xp:5 },
-  { w:1, day:null, id:19, t:"Elsie does quality control — checks all drawers, handles, and moving parts", who:"e", boss:false, xp:4 },
-  { w:1, day:"Weekend Days 6-7 — Rest & Planning", id:20, t:"Remove all masking tape carefully while paint is slightly warm", who:"p", boss:false, xp:4 },
-  { w:1, day:null, id:21, t:"Elsie sketches her dream room layout — where everything goes, how the lights will look", who:"e", boss:false, xp:5 },
-  { w:1, day:null, id:22, t:"Order anything still needed: LED name sign, mirror, strips, cable clips", who:"p", boss:false, xp:3 },
-  { w:1, day:null, id:23, t:"Build or assemble Elsie's bedside table", who:"p", boss:false, xp:5 },
-  { w:2, day:"Mon Day 8 — Furniture In", id:24, t:"Carry all furniture back in following Elsie's layout sketch", who:"t", boss:false, xp:5 },
-  { w:2, day:null, id:25, t:"Mount the bookshelf safely to the wall — plugs and screws into studs", who:"p", boss:false, xp:6 },
-  { w:2, day:null, id:26, t:"Elsie decides on shelf heights and what goes on each one", who:"e", boss:false, xp:4 },
-  { w:2, day:null, id:27, t:"Touch up any paint scuffs from moving furniture back", who:"p", boss:false, xp:3 },
-  { w:2, day:"Tue Day 9 — Mirror & Vanity Zone", id:28, t:"Hang the new mirror — measure twice, spirit level, drill once", who:"p", boss:false, xp:6 },
-  { w:2, day:null, id:29, t:"Position the vanity desk in its final spot and secure if needed", who:"p", boss:false, xp:4 },
-  { w:2, day:null, id:30, t:"Elsie arranges her vanity top exactly how she wants — her domain, her rules!", who:"e", boss:true, xp:6 },
-  { w:2, day:null, id:31, t:"Plan the LED strip route together: mirror edge, under desk shelf, top of bookshelf", who:"t", boss:false, xp:4 },
-  { w:2, day:"Wed Day 10 — Lights Day!", id:32, t:"Attach LED strips with 3M Command strips — vanity mirror edge first", who:"p", boss:false, xp:5 },
-  { w:2, day:null, id:33, t:"Run LED strips under the desk shelf and along the bookshelf top", who:"p", boss:false, xp:5 },
-  { w:2, day:null, id:34, t:"Mount the LED name sign ('Elsie' in cursive) above the vanity — Elsie picks exact height", who:"t", boss:true, xp:7 },
-  { w:2, day:null, id:35, t:"Clip all cables neatly along skirting and furniture edges", who:"p", boss:false, xp:4 },
-  { w:2, day:null, id:36, t:"Elsie does the ceremonial first switch-on of every light — one by one!", who:"e", boss:true, xp:8 },
-  { w:2, day:"Thu Day 11 — Emma's Corner & Shelves", id:37, t:"Set up Emma's bedside table in her corner with her own things", who:"t", boss:false, xp:5 },
-  { w:2, day:null, id:38, t:"Emma arranges her corner exactly how she wants it", who:"t", boss:false, xp:4 },
-  { w:2, day:null, id:39, t:"Elsie organises and styles her bookshelf — books, ornaments, photos, her way", who:"e", boss:false, xp:6 },
-  { w:2, day:null, id:40, t:"Hang any wall art, photos or decorations Elsie has chosen", who:"t", boss:false, xp:4 },
-  { w:2, day:"Fri Day 12 — Finishing Touches", id:41, t:"Final check of all lights — test controller colours and modes", who:"e", boss:false, xp:4 },
-  { w:2, day:null, id:42, t:"Touch up any remaining paint nicks; tighten any loose screws", who:"p", boss:false, xp:3 },
-  { w:2, day:null, id:43, t:"Deep clean and hoover the whole room — it needs to sparkle", who:"t", boss:false, xp:4 },
-  { w:2, day:null, id:44, t:"Elsie makes a 'Grand Opening' sign for the door — as fancy as she likes!", who:"e", boss:false, xp:5 },
-  { w:2, day:"Weekend Days 13-14 — Grand Reveal!", id:45, t:"Elsie does a final solo walk-through and approves the room", who:"e", boss:false, xp:5 },
-  { w:2, day:null, id:46, t:"Family lines up outside, eyes shut — Elsie opens the door and turns on the name sign!", who:"t", boss:true, xp:10 },
-  { w:2, day:null, id:47, t:"Take 'after' photos side-by-side with the 'before' photos from Day 1", who:"t", boss:false, xp:4 },
-  { w:2, day:null, id:48, t:"Celebrate! Movie night in the new room — Elsie picks the film", who:"t", boss:true, xp:10 },
+  {w:1,day:"Mon Day 1 — Quest Launch",id:1,t:"Hold a family quest briefing: the plan, the rules, the ban on early peeks",who:"t",boss:false,xp:3},
+  {w:1,day:null,id:2,t:"Elsie writes and decorates the 'Quest Rules' poster for the bedroom door",who:"e",boss:false,xp:4},
+  {w:1,day:null,id:3,t:"Take 'before' photos of every corner of the room",who:"t",boss:false,xp:3},
+  {w:1,day:null,id:4,t:"Empty the room completely — pack everything into labelled boxes",who:"t",boss:false,xp:5},
+  {w:1,day:"Tue Day 2 — Crack-Filling & Prep",id:5,t:"Inspect all four walls and mark every crack or dent with a sticky dot",who:"e",boss:false,xp:4},
+  {w:1,day:null,id:6,t:"Fill all cracks and holes with flexible decorator's filler; sand smooth once dry",who:"p",boss:false,xp:6},
+  {w:1,day:null,id:7,t:"Tape around skirting boards, ceiling edges, and window frames",who:"p",boss:false,xp:5},
+  {w:1,day:null,id:8,t:"Elsie paints test swatches of purple shades on the wall — lives with them overnight to choose",who:"e",boss:true,xp:6},
+  {w:1,day:"Wed Day 3 — White Coat",id:9,t:"Apply a coat of white primer/undercoat to all walls",who:"p",boss:false,xp:6},
+  {w:1,day:null,id:10,t:"While walls dry: Elsie sorts all the Ikea vanity parts into labelled cups",who:"e",boss:false,xp:4},
+  {w:1,day:null,id:11,t:"Begin building the Ikea vanity desk (get to step 10 today)",who:"p",boss:false,xp:6},
+  {w:1,day:null,id:12,t:"Elsie is official instruction reader and bolt fetcher for the build",who:"e",boss:false,xp:4},
+  {w:1,day:"Thu Day 4 — Purple Day!",id:13,t:"Apply first coat of purple to all walls — cut in edges carefully",who:"p",boss:false,xp:7},
+  {w:1,day:null,id:14,t:"Elsie paints her own section of wall (lower half, supervised) — her permanent mark!",who:"t",boss:true,xp:8},
+  {w:1,day:null,id:15,t:"Make a paint record card: dab the colour, write the name and brand for touch-ups",who:"e",boss:false,xp:3},
+  {w:1,day:"Fri Day 5 — Second Coat & More Building",id:16,t:"Apply second and final purple coat — leave walls to cure fully",who:"p",boss:false,xp:6},
+  {w:1,day:null,id:17,t:"Finish building the Ikea vanity desk completely",who:"p",boss:true,xp:7},
+  {w:1,day:null,id:18,t:"Build Emma's bedside table",who:"p",boss:false,xp:5},
+  {w:1,day:null,id:19,t:"Elsie does quality control — checks all drawers, handles, and moving parts",who:"e",boss:false,xp:4},
+  {w:1,day:"Weekend Days 6-7 — Rest & Planning",id:20,t:"Remove all masking tape carefully while paint is slightly warm",who:"p",boss:false,xp:4},
+  {w:1,day:null,id:21,t:"Elsie sketches her dream room layout — where everything goes, how the lights will look",who:"e",boss:false,xp:5},
+  {w:1,day:null,id:22,t:"Order anything still needed: LED name sign, mirror, strips, cable clips",who:"p",boss:false,xp:3},
+  {w:1,day:null,id:23,t:"Build or assemble Elsie's bedside table",who:"p",boss:false,xp:5},
+  {w:2,day:"Mon Day 8 — Furniture In",id:24,t:"Carry all furniture back in following Elsie's layout sketch",who:"t",boss:false,xp:5},
+  {w:2,day:null,id:25,t:"Mount the bookshelf safely to the wall — plugs and screws into studs",who:"p",boss:false,xp:6},
+  {w:2,day:null,id:26,t:"Elsie decides on shelf heights and what goes on each one",who:"e",boss:false,xp:4},
+  {w:2,day:null,id:27,t:"Touch up any paint scuffs from moving furniture back",who:"p",boss:false,xp:3},
+  {w:2,day:"Tue Day 9 — Mirror & Vanity Zone",id:28,t:"Hang the new mirror — measure twice, spirit level, drill once",who:"p",boss:false,xp:6},
+  {w:2,day:null,id:29,t:"Position the vanity desk in its final spot and secure if needed",who:"p",boss:false,xp:4},
+  {w:2,day:null,id:30,t:"Elsie arranges her vanity top exactly how she wants — her domain, her rules!",who:"e",boss:true,xp:6},
+  {w:2,day:null,id:31,t:"Plan the LED strip route together: mirror edge, under desk shelf, top of bookshelf",who:"t",boss:false,xp:4},
+  {w:2,day:"Wed Day 10 — Lights Day!",id:32,t:"Attach LED strips with 3M Command strips — vanity mirror edge first",who:"p",boss:false,xp:5},
+  {w:2,day:null,id:33,t:"Run LED strips under the desk shelf and along the bookshelf top",who:"p",boss:false,xp:5},
+  {w:2,day:null,id:34,t:"Mount the LED name sign ('Elsie' in cursive) above the vanity — Elsie picks exact height",who:"t",boss:true,xp:7},
+  {w:2,day:null,id:35,t:"Clip all cables neatly along skirting and furniture edges",who:"p",boss:false,xp:4},
+  {w:2,day:null,id:36,t:"Elsie does the ceremonial first switch-on of every light — one by one!",who:"e",boss:true,xp:8},
+  {w:2,day:"Thu Day 11 — Emma's Corner & Shelves",id:37,t:"Set up Emma's bedside table in her corner with her own things",who:"t",boss:false,xp:5},
+  {w:2,day:null,id:38,t:"Emma arranges her corner exactly how she wants it",who:"t",boss:false,xp:4},
+  {w:2,day:null,id:39,t:"Elsie organises and styles her bookshelf — books, ornaments, photos, her way",who:"e",boss:false,xp:6},
+  {w:2,day:null,id:40,t:"Hang any wall art, photos or decorations Elsie has chosen",who:"t",boss:false,xp:4},
+  {w:2,day:"Fri Day 12 — Finishing Touches",id:41,t:"Final check of all lights — test controller colours and modes",who:"e",boss:false,xp:4},
+  {w:2,day:null,id:42,t:"Touch up any remaining paint nicks; tighten any loose screws",who:"p",boss:false,xp:3},
+  {w:2,day:null,id:43,t:"Deep clean and hoover the whole room — it needs to sparkle",who:"t",boss:false,xp:4},
+  {w:2,day:null,id:44,t:"Elsie makes a 'Grand Opening' sign for the door — as fancy as she likes!",who:"e",boss:false,xp:5},
+  {w:2,day:"Weekend Days 13-14 — Grand Reveal!",id:45,t:"Elsie does a final solo walk-through and approves the room",who:"e",boss:false,xp:5},
+  {w:2,day:null,id:46,t:"Family lines up outside, eyes shut — Elsie opens the door and turns on the name sign!",who:"t",boss:true,xp:10},
+  {w:2,day:null,id:47,t:"Take 'after' photos side-by-side with the 'before' photos from Day 1",who:"t",boss:false,xp:4},
+  {w:2,day:null,id:48,t:"Celebrate! Movie night in the new room — Elsie picks the film",who:"t",boss:true,xp:10},
 ];
 
 const MILESTONES = [
-  { id:'m1', taskId:8,  icon:'🎨', name:'The Colour is Chosen', day:'Day 2', desc:'Elsie picks her perfect purple' },
-  { id:'m2', taskId:14, icon:'🖌️', name:'Elsie Paints the Wall', day:'Day 4', desc:'Her mark is on the room forever' },
-  { id:'m3', taskId:17, icon:'🪞', name:'Vanity Desk Complete', day:'Day 5', desc:'The centrepiece is built' },
-  { id:'m4', taskId:34, icon:'✨', name:'Name Sign Goes Up', day:'Day 10', desc:'"Elsie" in lights above the desk' },
-  { id:'m5', taskId:36, icon:'💡', name:'First Lights On', day:'Day 10', desc:'Elsie switches on every light' },
-  { id:'m6', taskId:46, icon:'🦋', name:'The Grand Reveal', day:'Day 13/14', desc:'The moment the room is unveiled' },
+  {id:'m1',taskId:8,icon:'🎨',name:'The Colour is Chosen',day:'Day 2',desc:"Elsie picks her perfect purple"},
+  {id:'m2',taskId:14,icon:'🖌️',name:'Elsie Paints the Wall',day:'Day 4',desc:"Her mark is on the room forever"},
+  {id:'m3',taskId:17,icon:'🪞',name:'Vanity Desk Complete',day:'Day 5',desc:"The centrepiece is built"},
+  {id:'m4',taskId:34,icon:'✨',name:'Name Sign Goes Up',day:'Day 10',desc:'"Elsie" in lights above the desk'},
+  {id:'m5',taskId:36,icon:'💡',name:'First Lights On',day:'Day 10',desc:"Elsie switches on every light"},
+  {id:'m6',taskId:46,icon:'🦋',name:'The Grand Reveal',day:'Day 13/14',desc:"The moment the room is unveiled"},
 ];
 
 const GUIDES = [
-  { id:'g1', icon:'🖌️', title:'How to fill cracks in walls', sub:'Before you can paint purple, walls need to be perfect', tags:['Week 1','Parents','Day 2'],
-    steps:['Use a flexible decorator\'s filler — brands like Polycell or Ronseal work well. Not hard plaster filler.','Push the filler firmly into the crack using a filling knife (or an old butter knife). Slightly overfill — it shrinks as it dries.','Leave to dry fully — at least 2 hours, ideally overnight for deeper cracks.','Sand smooth with fine sandpaper (120 grit) until flush with the wall. Run your hand over it — you shouldn\'t feel a bump.','Wipe away all dust with a damp cloth before you prime.'],
-    tip:'Fill in the morning, sand in the afternoon — you\'ll be ready to prime the next day.',
-    warning:'Skipping primer after filling means the purple paint will look patchy over the filled spots. Always prime first!' },
-  { id:'g2', icon:'🟣', title:'How to paint a wall purple', sub:'Getting smooth, vivid coverage without streaks', tags:['Week 1','Together','Days 3–4'],
-    steps:['Prime first — a coat of white primer/undercoat is essential over old walls, especially before a deep colour like purple.','Use a brush to "cut in" — paint a neat 5cm strip around all edges: ceiling, skirting, window frames, corners.','Use a roller for the main wall area. Roll in a W pattern, then fill in without lifting the roller.','Apply the first coat and let it dry completely — at least 4 hours, ideally overnight.','Apply the second coat. Purple usually needs 2 coats minimum for solid, even coverage.','Remove masking tape while the second coat is still slightly warm — not wet, not fully dry.'],
-    tip:'Keep the paint record card! Dab paint on a piece of card with the colour name and brand. Brilliant for touch-ups later.',
-    warning:'Don\'t hang anything on the walls for at least 4 weeks after painting — the paint needs to fully cure, or Command strips will pull it off.' },
-  { id:'g3', icon:'💡', title:'How to fit LED strips safely', sub:'Getting the glow without damaging the walls or paint', tags:['Week 2','Parents','Day 10'],
-    steps:['Plan the route first — LED strips work best hidden behind mirror edges, under shelf overhangs, and along desk edges. The strip is hidden; only the glow is visible.','Use 3M Command strips (velcro type) to attach the LED strips to the furniture and mirror frame — NOT double-sided tape direct to the painted wall.','Peel the Command strip backing and press firmly for 30 seconds. Leave for 1 hour before attaching the LED strip.','Run the LED strip along the planned route and connect sections with the corner connectors that come in the kit.','Plug in and test before tidying cables.','Use small cable clips or cable conduit to run cables neatly along furniture edges and skirting boards to the plug socket.'],
-    tip:'Position strips behind the mirror frame or shelf edge so the strip itself is hidden — you\'ll only see the glow. This looks far more professional.',
-    warning:'Wait at least 4 weeks after painting before attaching anything to the painted walls. Before that, the paint is still curing.' },
-  { id:'g4', icon:'🔧', title:'How to build the Ikea vanity', sub:'Making the most important piece of furniture in the room', tags:['Week 1','Parents + Elsie','Days 3–5'],
-    steps:['Unbox everything and lay all parts out on the floor. Count every screw type against the parts list before you start.','Elsie\'s job: sort all screws into labelled cups (cup A for type A screws, etc.) and be the official instruction reader.','Follow the Ikea booklet step by step — don\'t skip ahead. Ikea numbering is strict.','Tighten every connection firmly but don\'t over-tighten particle board — it strips easily.','Once assembled, do a wobble test. If it wobbles, an anti-tip wall bracket is essential for safety.','Attach the anti-tip bracket to the wall before Elsie uses it.'],
-    tip:'Lay a blanket on the floor to protect the furniture finish while building.',
-    warning:'Ikea furniture MUST have the anti-tip bracket fitted to the wall. Tall furniture can tip — especially with a child leaning on it.' },
-  { id:'g5', icon:'✨', title:'Hanging the LED name sign', sub:'Getting "Elsie" in lights above the vanity', tags:['Week 2','Parents','Day 10'],
-    steps:['Order from Amazon or Etsy — search "custom LED neon sign name" — budget around £30–70 depending on size. Allow 3–5 days delivery.','Measure the space above the vanity. The sign should be roughly centred and at comfortable eye height when Elsie is sitting at the desk.','Most signs come with a clear acrylic backing and wall mount screws. Mark the fixing points in pencil first.','Use a spirit level to make sure it\'s perfectly straight before drilling.','Drill and plug the wall, screw in the mount, hang the sign, and plug in.'],
-    tip:'Centre the sign above the mirror rather than the whole desk — it looks better in the reflection!',
-    warning:'Drill into plasterboard carefully — use wall plugs rated for plasterboard (not just standard plugs) as they grip differently.' },
-  { id:'g6', icon:'🦋', title:'The Grand Reveal — how to do it right', sub:'Making the final moment as magical as possible', tags:['Week 2','Together','Day 13/14'],
-    steps:['Elsie does a solo final check the day before — she should be happy with everything before the reveal.','On reveal day, everyone stands outside the closed door. Eyes shut is optional but fun.','Elsie opens the door and enters first. She switches on the name sign, then the LED strips, then the main light.','Everyone else enters and reacts — this is Elsie\'s moment! Make a big deal of it.','Take "after" photos in the same spots as the "before" photos from Day 1 for an incredible comparison.','Celebrate properly — movie night in the new room, Elsie picks the film.'],
-    tip:'Record a short video on a phone — the reactions are priceless and Elsie will love watching it back.',
-    warning:'Make sure the room is properly clean and tidy before the reveal — first impressions last! Do the final hoover the day before.' },
+  {id:'g1',icon:'🖌️',title:'How to fill cracks in walls',sub:'Before you can paint purple, walls need to be perfect',tags:['Week 1','Parents','Day 2'],steps:["Use a flexible decorator's filler — brands like Polycell or Ronseal work well. Not hard plaster filler.","Push the filler firmly into the crack using a filling knife (or an old butter knife). Slightly overfill — it shrinks as it dries.","Leave to dry fully — at least 2 hours, ideally overnight for deeper cracks.","Sand smooth with fine sandpaper (120 grit) until flush with the wall. Run your hand over it — you shouldn't feel a bump.","Wipe away all dust with a damp cloth before you prime."],tip:"Fill in the morning, sand in the afternoon — you'll be ready to prime the next day.",warning:"Skipping primer after filling means the purple paint will look patchy over the filled spots. Always prime first!"},
+  {id:'g2',icon:'🟣',title:'How to paint a wall purple',sub:'Getting smooth, vivid coverage without streaks',tags:['Week 1','Together','Days 3–4'],steps:["Prime first — a coat of white primer/undercoat is essential over old walls, especially before a deep colour like purple.","Use a brush to 'cut in' — paint a neat 5cm strip around all edges: ceiling, skirting, window frames, corners.","Use a roller for the main wall area. Roll in a W pattern, then fill in without lifting the roller.","Apply the first coat and let it dry completely — at least 4 hours, ideally overnight.","Apply the second coat. Purple usually needs 2 coats minimum for solid, even coverage.","Remove masking tape while the second coat is still slightly warm — not wet, not fully dry."],tip:"Keep the paint record card! Dab paint on a piece of card with the colour name and brand. Brilliant for touch-ups later.",warning:"Don't hang anything on the walls for at least 4 weeks after painting — the paint needs to fully cure, or Command strips will pull it off."},
+  {id:'g3',icon:'💡',title:'How to fit LED strips safely',sub:'Getting the glow without damaging the walls or paint',tags:['Week 2','Parents','Day 10'],steps:["Plan the route first — LED strips work best hidden behind mirror edges, under shelf overhangs, and along desk edges.","Use 3M Command strips (velcro type) to attach the LED strips to the furniture and mirror frame — NOT double-sided tape direct to the painted wall.","Peel the Command strip backing and press firmly for 30 seconds. Leave for 1 hour before attaching the LED strip.","Run the LED strip along the planned route and connect sections with the corner connectors that come in the kit.","Plug in and test before tidying cables.","Use small cable clips or cable conduit to run cables neatly along furniture edges and skirting boards to the plug socket."],tip:"Position strips behind the mirror frame or shelf edge so the strip itself is hidden — you'll only see the glow. This looks far more professional.",warning:"Wait at least 4 weeks after painting before attaching anything to the painted walls. Before that, the paint is still curing."},
+  {id:'g4',icon:'🔧',title:'How to build the Ikea vanity',sub:'Making the most important piece of furniture in the room',tags:['Week 1','Parents + Elsie','Days 3–5'],steps:["Unbox everything and lay all parts out on the floor. Count every screw type against the parts list before you start.","Elsie's job: sort all screws into labelled cups (cup A for type A screws, etc.) and be the official instruction reader.","Follow the Ikea booklet step by step — don't skip ahead. Ikea numbering is strict.","Tighten every connection firmly but don't over-tighten particle board — it strips easily.","Once assembled, do a wobble test. If it wobbles, an anti-tip wall bracket is essential for safety.","Attach the anti-tip bracket to the wall before Elsie uses it."],tip:"Lay a blanket on the floor to protect the furniture finish while building.",warning:"Ikea furniture MUST have the anti-tip bracket fitted to the wall. Tall furniture can tip — especially with a child leaning on it."},
+  {id:'g5',icon:'✨',title:'Hanging the LED name sign',sub:'Getting "Elsie" in lights above the vanity',tags:['Week 2','Parents','Day 10'],steps:["Order from Amazon or Etsy — search 'custom LED neon sign name' — budget around £30–70 depending on size. Allow 3–5 days delivery.","Measure the space above the vanity. The sign should be roughly centred and at comfortable eye height when Elsie is sitting at the desk.","Most signs come with a clear acrylic backing and wall mount screws. Mark the fixing points in pencil first.","Use a spirit level to make sure it's perfectly straight before drilling.","Drill and plug the wall, screw in the mount, hang the sign, and plug in."],tip:"Centre the sign above the mirror rather than the whole desk — it looks better in the reflection!",warning:"Drill into plasterboard carefully — use wall plugs rated for plasterboard (not just standard plugs) as they grip differently."},
+  {id:'g6',icon:'🦋',title:'The Grand Reveal — how to do it right',sub:'Making the final moment as magical as possible',tags:['Week 2','Together','Day 13/14'],steps:["Elsie does a solo final check the day before — she should be happy with everything before the reveal.","On reveal day, everyone stands outside the closed door. Eyes shut is optional but fun.","Elsie opens the door and enters first. She switches on the name sign, then the LED strips, then the main light.","Everyone else enters and reacts — this is Elsie's moment! Make a big deal of it.","Take 'after' photos in the same spots as the 'before' photos from Day 1 for an incredible comparison.","Celebrate properly — movie night in the new room, Elsie picks the film."],tip:"Record a short video on a phone — the reactions are priceless and Elsie will love watching it back.",warning:"Make sure the room is properly clean and tidy before the reveal — first impressions last! Do the final hoover the day before."},
 ];
 
 const SHOPPING = [
-  { cat:"🚨 Order immediately", items:[
-    { id:'s1', name:'Purple paint', note:'e.g. Dulux / Crown — 2.5L covers avg bedroom twice', priority:'urgent' },
-    { id:'s2', name:'White primer / undercoat', note:'1L is enough for most bedrooms', priority:'urgent' },
-    { id:'s3', name:'Flexible decorator\'s filler', note:'Polycell or Ronseal — one tube', priority:'urgent' },
-    { id:'s4', name:'Masking tape', note:'Two rolls of 25mm painters tape', priority:'urgent' },
-    { id:'s12', name:'Paint roller + tray + brush set', note:'Medium pile roller, angled brush for cutting in', priority:'urgent' },
+  {cat:"🚨 Order immediately",items:[
+    {id:'s1',name:'Purple paint',note:'e.g. Dulux / Crown — 2.5L covers avg bedroom twice',priority:'urgent'},
+    {id:'s2',name:'White primer / undercoat',note:'1L is enough for most bedrooms',priority:'urgent'},
+    {id:'s3',name:"Flexible decorator's filler",note:'Polycell or Ronseal — one tube',priority:'urgent'},
+    {id:'s4',name:'Masking tape',note:'Two rolls of 25mm painters tape',priority:'urgent'},
+    {id:'s12',name:'Paint roller + tray + brush set',note:'Medium pile roller, angled brush for cutting in',priority:'urgent'},
   ]},
-  { cat:"📦 Order before Week 2", items:[
-    { id:'s5', name:'LED name sign — "Elsie" in cursive', note:'Amazon or Etsy — allow 3–5 days delivery', priority:'before' },
-    { id:'s6', name:'LED strip lights (colour changing, remote)', note:'5m strip with controller — check it has a remote', priority:'before' },
-    { id:'s7', name:'New mirror', note:'Measure the wall space first!', priority:'before' },
+  {cat:"📦 Order before Week 2",items:[
+    {id:'s5',name:'LED name sign — "Elsie" in cursive',note:'Amazon or Etsy — allow 3–5 days delivery',priority:'before'},
+    {id:'s6',name:'LED strip lights (colour changing, remote)',note:'5m strip with controller — check it has a remote',priority:'before'},
+    {id:'s7',name:'New mirror',note:'Measure the wall space first!',priority:'before'},
   ]},
-  { cat:"🛠️ Get from a DIY shop", items:[
-    { id:'s8', name:'3M Command strips (velcro type)', note:'For LED strips — avoids damaging painted walls', priority:'before' },
-    { id:'s9', name:'Cable clips / cable conduit', note:'For tidying LED cables along skirting', priority:'before' },
-    { id:'s10', name:'Fine sandpaper (120 grit)', note:'For sanding back filler', priority:'before' },
-    { id:'s11', name:'Anti-tip bracket for Ikea vanity', note:'Safety essential', priority:'before' },
+  {cat:"🛠️ Get from a DIY shop",items:[
+    {id:'s8',name:'3M Command strips (velcro type)',note:'For LED strips — avoids damaging painted walls',priority:'before'},
+    {id:'s9',name:'Cable clips / cable conduit',note:'For tidying LED cables along skirting',priority:'before'},
+    {id:'s10',name:'Fine sandpaper (120 grit)',note:'For sanding back filler',priority:'before'},
+    {id:'s11',name:'Anti-tip bracket for Ikea vanity',note:'Safety essential',priority:'before'},
   ]},
-  { cat:"🦋 Nice to have", items:[
-    { id:'s13', name:'Peel-and-stick shelf liner', note:'Adds a nice finish inside the bookshelf', priority:'nice' },
-    { id:'s14', name:'Small photo frames for Elsie\'s shelf', note:'4–6 for photos, artwork, memory items', priority:'nice' },
-    { id:'s15', name:'Fairy lights (extra atmosphere)', note:'For Emma\'s corner or above the bed', priority:'nice' },
-    { id:'s16', name:'Butterfly wall stickers', note:'For above the bookshelf or around the name sign!', priority:'nice' },
+  {cat:"🦋 Nice to have",items:[
+    {id:'s13',name:'Peel-and-stick shelf liner',note:'Adds a nice finish inside the bookshelf',priority:'nice'},
+    {id:'s14',name:"Small photo frames for Elsie's shelf",note:'4–6 for photos, artwork, memory items',priority:'nice'},
+    {id:'s15',name:'Fairy lights (extra atmosphere)',note:"For Emma's corner or above the bed",priority:'nice'},
+    {id:'s16',name:'Butterfly wall stickers',note:'For above the bookshelf or around the name sign!',priority:'nice'},
   ]},
 ];
 
 // ── STATE ──────────────────────────────────────────────────────────────────
 const TOTAL_XP = TASKS.reduce((s,t)=>s+t.xp,0);
-let checked=[], shopChecked=[];
-try{checked=JSON.parse(localStorage.getItem('eq_tasks')||'[]');}catch(e){}
+let completions = {}; // taskId -> {completed_by, completed_at}
+let allNotes = {};    // taskId -> [{author,body,created_at}]
+let allPhotos = {};   // taskId -> [{uploaded_by,caption,storage_path,created_at}]
+let shopChecked = [];
+let openPanels = {}; // taskId -> {tab: 'notes'|'photos'}
+let uploadingTask = null;
+
 try{shopChecked=JSON.parse(localStorage.getItem('eq_shop')||'[]');}catch(e){}
-function save(){try{localStorage.setItem('eq_tasks',JSON.stringify(checked));localStorage.setItem('eq_shop',JSON.stringify(shopChecked));}catch(e){}}
+function saveShop(){try{localStorage.setItem('eq_shop',JSON.stringify(shopChecked));}catch(e){}}
 
 function whoName(w){return w==='e'?'Elsie':w==='p'?'Parents':'Together';}
 function whoBadge(w){
   const cls=w==='e'?'tbadge-e':w==='p'?'tbadge-p':'tbadge-t';
   return `<span class="tbadge ${cls}">${whoName(w)}</span>`;
 }
+function fmtTime(ts){
+  if(!ts)return '';
+  const d=new Date(ts);
+  return d.toLocaleDateString('en-GB',{day:'numeric',month:'short'})+' '+d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+}
 
-function buildQuestBoard(){
-  const el=document.getElementById('quest-board');
-  let html='',week=0,dayOpen=false;
-  TASKS.forEach(task=>{
+// ── SUPABASE OPERATIONS ───────────────────────────────────────────────────
+async function loadAll() {
+  try {
+    const [tc, notes, photos] = await Promise.all([
+      db.from('task_completions').select('*'),
+      db.from('notes').select('*').order('created_at',{ascending:true}),
+      db.from('photos').select('*').order('created_at',{ascending:false}),
+    ]);
+    completions = {};
+    (tc.data||[]).forEach(r => { completions[r.task_id] = r; });
+    allNotes = {};
+    (notes.data||[]).forEach(r => {
+      if(!allNotes[r.task_id]) allNotes[r.task_id] = [];
+      allNotes[r.task_id].push(r);
+    });
+    allPhotos = {};
+    (photos.data||[]).forEach(r => {
+      if(!allPhotos[r.task_id]) allPhotos[r.task_id] = [];
+      allPhotos[r.task_id].push(r);
+    });
+    setSyncOnline(true);
+  } catch(e) {
+    setSyncOnline(false);
+  }
+  rebuildAll();
+}
+
+async function toggleTask(id) {
+  if(!currentUser) return;
+  if(completions[id]) {
+    await db.from('task_completions').delete().eq('task_id', id);
+    delete completions[id];
+  } else {
+    const {data} = await db.from('task_completions').insert({task_id:id,completed_by:currentUser}).select().single();
+    if(data) completions[id] = data;
+  }
+  rebuildAll();
+}
+
+async function submitNote(taskId, body) {
+  if(!body.trim()||!currentUser) return;
+  const {data} = await db.from('notes').insert({task_id:taskId,author:currentUser,body:body.trim()}).select().single();
+  if(data) {
+    if(!allNotes[taskId]) allNotes[taskId] = [];
+    allNotes[taskId].push(data);
+    renderTaskPanel(taskId);
+  }
+}
+
+async function uploadPhoto(taskId, file, caption) {
+  if(!file||!currentUser) return;
+  const ext = file.name.split('.').pop();
+  const path = `${taskId}/${Date.now()}.${ext}`;
+  const {error:upErr} = await db.storage.from('progress-photos').upload(path, file);
+  if(upErr) { alert('Upload failed: '+upErr.message); return; }
+  const {data} = await db.from('photos').insert({task_id:taskId,uploaded_by:currentUser,caption:caption||'',storage_path:path}).select().single();
+  if(data) {
+    if(!allPhotos[taskId]) allPhotos[taskId] = [];
+    allPhotos[taskId].unshift(data);
+    renderTaskPanel(taskId);
+    buildGallery();
+    updateStats();
+  }
+}
+
+function getPhotoUrl(path) {
+  return db.storage.from('progress-photos').getPublicUrl(path).data.publicUrl;
+}
+
+// ── REALTIME ──────────────────────────────────────────────────────────────
+function subscribeRealtime() {
+  db.channel('quest').on('postgres_changes',{event:'*',schema:'public',table:'task_completions'},payload=>{
+    if(payload.eventType==='INSERT') completions[payload.new.task_id]=payload.new;
+    if(payload.eventType==='DELETE') delete completions[payload.old.task_id];
+    rebuildAll();
+  }).on('postgres_changes',{event:'INSERT',schema:'public',table:'notes'},payload=>{
+    const n=payload.new;
+    if(!allNotes[n.task_id]) allNotes[n.task_id]=[];
+    if(!allNotes[n.task_id].find(x=>x.id===n.id)) allNotes[n.task_id].push(n);
+    renderTaskPanel(n.task_id);
+  }).on('postgres_changes',{event:'INSERT',schema:'public',table:'photos'},payload=>{
+    const p=payload.new;
+    if(!allPhotos[p.task_id]) allPhotos[p.task_id]=[];
+    if(!allPhotos[p.task_id].find(x=>x.id===p.id)) allPhotos[p.task_id].unshift(p);
+    renderTaskPanel(p.task_id);
+    buildGallery(); updateStats();
+  }).subscribe();
+}
+
+function setSyncOnline(online) {
+  const dot = document.getElementById('sync-dot');
+  dot.className = 'sync-dot' + (online ? '' : ' offline');
+}
+
+// ── RENDER ────────────────────────────────────────────────────────────────
+function rebuildAll() {
+  buildQuestBoard();
+  buildToday();
+  buildMilestones();
+  buildGallery();
+  updateStats();
+}
+
+function buildQuestBoard() {
+  const el = document.getElementById('quest-board');
+  let html='', week=0, dayOpen=false;
+  TASKS.forEach(task => {
     if(task.w!==week){
       if(dayOpen){html+='</div>';dayOpen=false;}
       if(week>0)html+='</div>';
@@ -692,13 +791,25 @@ function buildQuestBoard(){
       html+=`<div class="day-group"><div class="day-heading">${task.day}</div>`;
       dayOpen=true;
     }
-    const done=checked.includes(task.id);
-    html+=`<div class="task-row${task.boss?' boss':''}${done?' done':''}" onclick="toggleTask(${task.id})">
-      <div class="task-check${done?' checked':''}"></div>
-      <div class="task-content">
-        <div class="task-text">${task.t}</div>
-        <div class="task-badges">${whoBadge(task.who)}${task.boss?'<span class="tbadge tbadge-boss">🦋 Boss task</span>':''}<span class="tbadge tbadge-xp">+${task.xp} XP</span></div>
+    const done=!!completions[task.id];
+    const comp=completions[task.id];
+    const noteCount=(allNotes[task.id]||[]).length;
+    const photoCount=(allPhotos[task.id]||[]).length;
+    const panelOpen=openPanels[task.id];
+    html+=`<div class="task-row${task.boss?' boss':''}${done?' done':''}" id="task-row-${task.id}">
+      <div class="task-main" onclick="toggleTask(${task.id})">
+        <div class="task-check${done?' checked':''}"></div>
+        <div class="task-content">
+          <div class="task-text">${task.t}</div>
+          <div class="task-badges">${whoBadge(task.who)}${task.boss?'<span class="tbadge tbadge-boss">🦋 Boss task</span>':''}<span class="tbadge tbadge-xp">+${task.xp} XP</span></div>
+          ${comp?`<div class="completed-by">✓ Done by ${comp.completed_by} · ${fmtTime(comp.completed_at)}</div>`:''}
+        </div>
+        <div style="display:flex;gap:4px;flex-shrink:0" onclick="event.stopPropagation()">
+          <button class="task-expand-btn" onclick="togglePanel(${task.id},'notes')">💬 ${noteCount}</button>
+          <button class="task-expand-btn" onclick="togglePanel(${task.id},'photos')">📸 ${photoCount}</button>
+        </div>
       </div>
+      ${panelOpen ? renderTaskPanelHTML(task.id, panelOpen) : ''}
     </div>`;
   });
   if(dayOpen)html+='</div>';
@@ -706,12 +817,134 @@ function buildQuestBoard(){
   el.innerHTML=html;
 }
 
+function togglePanel(taskId, tab) {
+  if(openPanels[taskId]===tab) {
+    delete openPanels[taskId];
+  } else {
+    openPanels[taskId]=tab;
+  }
+  // Re-render just this task row
+  const row = document.getElementById('task-row-'+taskId);
+  if(!row) return;
+  const task = TASKS.find(t=>t.id===taskId);
+  if(!task) return;
+  const done=!!completions[taskId];
+  const comp=completions[taskId];
+  const noteCount=(allNotes[taskId]||[]).length;
+  const photoCount=(allPhotos[taskId]||[]).length;
+  const panelOpen=openPanels[taskId];
+  row.className=`task-row${task.boss?' boss':''}${done?' done':''}`;
+  row.innerHTML=`
+    <div class="task-main" onclick="toggleTask(${taskId})">
+      <div class="task-check${done?' checked':''}"></div>
+      <div class="task-content">
+        <div class="task-text">${task.t}</div>
+        <div class="task-badges">${whoBadge(task.who)}${task.boss?'<span class="tbadge tbadge-boss">🦋 Boss task</span>':''}<span class="tbadge tbadge-xp">+${task.xp} XP</span></div>
+        ${comp?`<div class="completed-by">✓ Done by ${comp.completed_by} · ${fmtTime(comp.completed_at)}</div>`:''}
+      </div>
+      <div style="display:flex;gap:4px;flex-shrink:0" onclick="event.stopPropagation()">
+        <button class="task-expand-btn" onclick="togglePanel(${taskId},'notes')">💬 ${noteCount}</button>
+        <button class="task-expand-btn" onclick="togglePanel(${taskId},'photos')">📸 ${photoCount}</button>
+      </div>
+    </div>
+    ${panelOpen ? renderTaskPanelHTML(taskId, panelOpen) : ''}
+  `;
+}
+
+function renderTaskPanelHTML(taskId, activeTab) {
+  const notes=(allNotes[taskId]||[]);
+  const photos=(allPhotos[taskId]||[]);
+  const notesList = notes.length ? notes.map(n=>`
+    <div class="note-item">
+      <span class="note-author ${n.author==='Emma'?'emma':n.author==='Parents'?'parents':''}">${n.author}</span>
+      <span class="note-time">${fmtTime(n.created_at)}</span>
+      <div class="note-body">${n.body}</div>
+    </div>`).join('') : '<div class="empty-notes">No notes yet — be the first! 💬</div>';
+  
+  const photoGrid = photos.length ? `<div class="photo-grid">${photos.map(p=>`
+    <div class="photo-thumb" onclick="openLightbox('${getPhotoUrl(p.storage_path)}','${p.caption||p.uploaded_by}')">
+      <img src="${getPhotoUrl(p.storage_path)}" alt="${p.caption||''}">
+      <div class="photo-caption">${p.caption||p.uploaded_by}</div>
+    </div>`).join('')}</div>` : '<div class="empty-notes">No photos yet — grab your camera! 📸</div>';
+
+  return `<div class="task-panel">
+    <div class="task-panel-tabs">
+      <button class="tp-tab${activeTab==='notes'?' active':''}" onclick="event.stopPropagation();togglePanel(${taskId},'notes')">💬 Notes (${notes.length})</button>
+      <button class="tp-tab${activeTab==='photos'?' active':''}" onclick="event.stopPropagation();togglePanel(${taskId},'photos')">📸 Photos (${photos.length})</button>
+    </div>
+    <div class="tp-section${activeTab==='notes'?' active':''}">
+      <div class="note-list">${notesList}</div>
+      <div class="note-input-row">
+        <textarea class="note-input" id="note-input-${taskId}" rows="2" placeholder="Leave a note..." onclick="event.stopPropagation()"></textarea>
+        <button class="note-send" onclick="event.stopPropagation();sendNote(${taskId})">Send</button>
+      </div>
+    </div>
+    <div class="tp-section${activeTab==='photos'?' active':''}">
+      ${photoGrid}
+      <div class="photo-uploader" onclick="event.stopPropagation()">
+        <label class="photo-file-btn">
+          📷 Choose photo
+          <input type="file" accept="image/*" style="display:none" onchange="handleFileSelect(${taskId},this)">
+        </label>
+        <input class="photo-caption-input" id="photo-cap-${taskId}" placeholder="Add a caption..." onclick="event.stopPropagation()">
+        <button class="photo-upload-btn" id="photo-btn-${taskId}" onclick="event.stopPropagation();doUpload(${taskId})" disabled>Upload</button>
+        <span class="upload-progress" id="photo-prog-${taskId}"></span>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderTaskPanel(taskId) {
+  const panelOpen = openPanels[taskId];
+  if(!panelOpen) return;
+  // Find the task-panel inside the row and re-render it
+  const row = document.getElementById('task-row-'+taskId);
+  if(!row) return;
+  const existing = row.querySelector('.task-panel');
+  if(existing) {
+    existing.outerHTML = renderTaskPanelHTML(taskId, panelOpen);
+  }
+}
+
+async function sendNote(taskId) {
+  const inp = document.getElementById('note-input-'+taskId);
+  if(!inp) return;
+  const btn = inp.nextElementSibling;
+  btn.disabled = true;
+  await submitNote(taskId, inp.value);
+  if(inp) inp.value = '';
+  btn.disabled = false;
+}
+
+let pendingFiles = {};
+function handleFileSelect(taskId, input) {
+  const file = input.files[0];
+  if(!file) return;
+  pendingFiles[taskId] = file;
+  const btn = document.getElementById('photo-btn-'+taskId);
+  if(btn) btn.disabled = false;
+}
+
+async function doUpload(taskId) {
+  const file = pendingFiles[taskId];
+  if(!file) return;
+  const cap = document.getElementById('photo-cap-'+taskId);
+  const btn = document.getElementById('photo-btn-'+taskId);
+  const prog = document.getElementById('photo-prog-'+taskId);
+  if(btn) btn.disabled = true;
+  if(prog) prog.textContent = 'Uploading...';
+  await uploadPhoto(taskId, file, cap?cap.value:'');
+  delete pendingFiles[taskId];
+  if(prog) prog.textContent = '✓ Done!';
+  setTimeout(()=>{ if(prog) prog.textContent=''; }, 2000);
+}
+
 function buildToday(){
   const el=document.getElementById('today-block');
   const todayTasks=TASKS.filter(t=>t.w===1&&t.day&&t.day.startsWith('Mon'));
   let html=`<div class="today-card"><div class="today-label">🦋 Quest starts Monday</div><div class="today-day-name">Day 1 — Quest Launch Day 🚀</div><div class="today-tasks">`;
   todayTasks.forEach(task=>{
-    const done=checked.includes(task.id);
+    const done=!!completions[task.id];
     const wl=task.who==='e'?'who-e':task.who==='p'?'who-p':'who-t';
     html+=`<div class="today-task${done?' done':''}" onclick="toggleTask(${task.id})">
       <div class="today-check${done?' checked':''}"></div>
@@ -727,8 +960,8 @@ function buildMilestones(){
   const el=document.getElementById('milestone-list');
   let html='';
   MILESTONES.forEach((m,i)=>{
-    const done=checked.includes(m.taskId);
-    const upcoming=!done&&i>0&&!checked.includes(MILESTONES[i-1]?.taskId);
+    const done=!!completions[m.taskId];
+    const upcoming=!done&&i>0&&!completions[MILESTONES[i-1]?.taskId];
     const cls=done?' done':upcoming?' upcoming':'';
     const status=done?'Done! 🦋':upcoming?'Upcoming':'Next up!';
     html+=`<div class="milestone${cls}">
@@ -738,6 +971,34 @@ function buildMilestones(){
     </div>`;
   });
   el.innerHTML=html;
+}
+
+function buildGallery() {
+  const el = document.getElementById('gallery-container');
+  const allPics = Object.values(allPhotos).flat().sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));
+  if(!allPics.length) {
+    el.innerHTML=`<div class="gallery-empty"><div class="gallery-empty-icon">📷</div><div class="gallery-empty-text">No photos yet!</div><div class="gallery-empty-sub">Upload photos on tasks in the Quest Board to see them here</div></div>`;
+    return;
+  }
+  el.innerHTML=`<div class="gallery-grid">${allPics.map(p=>{
+    const task=TASKS.find(t=>t.id===p.task_id);
+    return `<div class="gallery-item" onclick="openLightbox('${getPhotoUrl(p.storage_path)}','${p.caption||p.uploaded_by}')">
+      <img class="gallery-img" src="${getPhotoUrl(p.storage_path)}" alt="${p.caption||''}">
+      <div class="gallery-meta">
+        <div class="gallery-cap">${p.caption||'Progress photo'}</div>
+        <div class="gallery-info">${p.uploaded_by} · ${task?task.t.slice(0,30)+'…':''}</div>
+      </div>
+    </div>`;
+  }).join('')}</div>`;
+}
+
+function openLightbox(url, cap) {
+  document.getElementById('lightbox-img').src = url;
+  document.getElementById('lightbox-cap').textContent = cap;
+  document.getElementById('lightbox').classList.add('open');
+}
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('open');
 }
 
 function buildGuides(){
@@ -753,8 +1014,7 @@ function buildGuides(){
 function openGuide(id){
   const g=GUIDES.find(x=>x.id===id);
   if(!g)return;
-  const steps=g.steps.map((s,i)=>`<div class="guide-step"><div class="guide-step-num">${i+1}</div><div class="guide-step-text">${s}</div></div>`).join('');
-  document.getElementById('guide-content').innerHTML=`<div class="guide-full-title">${g.icon} ${g.title}</div>${steps}${g.tip?`<div class="guide-tip"><div class="guide-tip-label">💡 Pro tip</div>${g.tip}</div>`:''}${g.warning?`<div class="guide-warning"><div class="guide-warning-label">⚠️ Watch out</div>${g.warning}</div>`:''}`;
+  document.getElementById('guide-content').innerHTML=`<div class="guide-full-title">${g.icon} ${g.title}</div>${g.steps.map((s,i)=>`<div class="guide-step"><div class="guide-step-num">${i+1}</div><div class="guide-step-text">${s}</div></div>`).join('')}${g.tip?`<div class="guide-tip"><div class="guide-tip-label">💡 Pro tip</div>${g.tip}</div>`:''}${g.warning?`<div class="guide-warning"><div class="guide-warning-label">⚠️ Watch out</div>${g.warning}</div>`:''}`;
   document.getElementById('guides-list').style.display='none';
   document.getElementById('guide-detail').classList.add('open');
 }
@@ -769,37 +1029,35 @@ function buildShopping(){
     const done=shopChecked.includes(item.id);
     const prioCls=item.priority==='urgent'?'prio-urgent':item.priority==='before'?'prio-before':'prio-nice';
     const prioText=item.priority==='urgent'?'Get now':item.priority==='before'?'Before Week 2':'Nice to have';
-    return `<div class="shop-item${done?' done':''}" onclick="toggleShop('${item.id}')"><div class="shop-check${done?' checked':''}"></div><div class="shop-name">${item.name}</div><div class="shop-note">${item.note}</div><span class="shop-priority ${prioCls}">${prioText}</span></div>`;
+    return `<div class="shop-item${done?' done':''}" onclick="toggleShop('${item.id}')"><div class="shop-check${done?' checked':''}"></div><div><div class="shop-name">${item.name}</div><div class="shop-note">${item.note}</div></div><span class="shop-priority ${prioCls}">${prioText}</span></div>`;
   }).join('')}</div>`).join('');
 }
 
 function updateStats(){
-  const earned=TASKS.filter(t=>checked.includes(t.id)).reduce((s,t)=>s+t.xp,0);
-  const pct=Math.round(earned/TOTAL_XP*100);
+  const doneIds = Object.keys(completions).map(Number);
+  const earned = TASKS.filter(t=>doneIds.includes(t.id)).reduce((s,t)=>s+t.xp,0);
+  const pct = Math.round(earned/TOTAL_XP*100);
   document.getElementById('hdr-fill').style.width=pct+'%';
   document.getElementById('hdr-xp').textContent=`${earned} / ${TOTAL_XP}`;
   [1,2,3,4,5].forEach(i=>document.getElementById('bf'+i).classList.toggle('lit',pct>=i*20));
-  document.getElementById('stat-done').textContent=checked.length;
+  document.getElementById('stat-done').textContent=doneIds.length;
   document.getElementById('stat-xp').textContent=earned;
-  const bossDone=TASKS.filter(t=>t.boss&&checked.includes(t.id)).length;
-  const bossTotal=TASKS.filter(t=>t.boss).length;
-  document.getElementById('stat-boss').textContent=`${bossDone}/${bossTotal}`;
+  const bossDone=TASKS.filter(t=>t.boss&&doneIds.includes(t.id)).length;
+  document.getElementById('stat-boss').textContent=`${bossDone}/10`;
+  const totalPhotos = Object.values(allPhotos).reduce((s,a)=>s+a.length,0);
+  document.getElementById('stat-photos').textContent=totalPhotos;
   const w1t=TASKS.filter(t=>t.w===1), w2t=TASKS.filter(t=>t.w===2);
-  const w1d=w1t.filter(t=>checked.includes(t.id)).length;
-  const w2d=w2t.filter(t=>checked.includes(t.id)).length;
+  const w1d=w1t.filter(t=>doneIds.includes(t.id)).length;
+  const w2d=w2t.filter(t=>doneIds.includes(t.id)).length;
   document.getElementById('w1-bar').style.width=Math.round(w1d/w1t.length*100)+'%';
   document.getElementById('w2-bar').style.width=Math.round(w2d/w2t.length*100)+'%';
   document.getElementById('w1-count').textContent=`${w1d} / ${w1t.length} tasks done`;
   document.getElementById('w2-count').textContent=`${w2d} / ${w2t.length} tasks done`;
 }
 
-function toggleTask(id){
-  if(checked.includes(id))checked=checked.filter(x=>x!==id);else checked.push(id);
-  save(); updateStats(); buildQuestBoard(); buildMilestones(); buildToday();
-}
 function toggleShop(id){
   if(shopChecked.includes(id))shopChecked=shopChecked.filter(x=>x!==id);else shopChecked.push(id);
-  save(); buildShopping();
+  saveShop(); buildShopping();
 }
 function showTab(tab,btn){
   document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
@@ -808,39 +1066,40 @@ function showTab(tab,btn){
   btn.classList.add('active');
 }
 
-// ── ANIMATED HEADER BUTTERFLIES ─────────────────────────────────────────
 function buildHeaderButterflies(){
   const c=document.getElementById('header-bf');
-  const positions=[[8,15],[25,60],[72,20],[88,55],[55,35],[40,75],[15,45],[65,80]];
-  positions.forEach(([left,top],i)=>{
-    const d=document.createElement('div');
-    d.className='hb';
-    d.textContent='🦋';
+  [[8,15],[25,60],[72,20],[88,55],[55,35],[40,75],[15,45],[65,80]].forEach(([left,top],i)=>{
+    const d=document.createElement('div');d.className='hb';d.textContent='🦋';
     d.style.cssText=`left:${left}%;top:${top}%;font-size:${16+Math.random()*18}px;animation-delay:${i*0.7}s;animation-duration:${3+Math.random()*2}s`;
     c.appendChild(d);
   });
 }
-
-// ── FLOATING PAGE BUTTERFLIES ────────────────────────────────────────────
 function buildFloatingButterflies(){
   const c=document.getElementById('float-bf');
   for(let i=0;i<8;i++){
-    const d=document.createElement('div');
-    d.className='butterfly-float';
-    d.textContent='🦋';
+    const d=document.createElement('div');d.className='butterfly-float';d.textContent='🦋';
     d.style.cssText=`left:${5+Math.random()*90}%;font-size:${14+Math.random()*12}px;animation-delay:${i*4+Math.random()*6}s;animation-duration:${14+Math.random()*10}s`;
     c.appendChild(d);
   }
 }
 
-buildHeaderButterflies();
-buildFloatingButterflies();
-buildToday();
-buildQuestBoard();
-buildMilestones();
-buildGuides();
-buildShopping();
-updateStats();
+// ── INIT ──────────────────────────────────────────────────────────────────
+function init() {
+  buildHeaderButterflies();
+  buildFloatingButterflies();
+  buildGuides();
+  buildShopping();
+  loadAll().then(() => subscribeRealtime());
+}
+
+if(currentUser) {
+  init();
+} else {
+  buildHeaderButterflies();
+  buildFloatingButterflies();
+  buildGuides();
+  buildShopping();
+}
 </script>
 </body>
 </html>
