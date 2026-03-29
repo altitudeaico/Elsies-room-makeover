@@ -5,7 +5,169 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Elsie's Room Makeover — HQ 🦋</title>
 <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+// ── TOAST ─────────────────────────────────────────────────────────────────
+let toastTimer;
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+// ── XP CELEBRATION ────────────────────────────────────────────────────────
+const CEL_COLORS = ['#F5C842','#9B6FD4','#F0A8D0','#A8E8D4','#FFFFFF'];
+function showXpCelebration(emoji, title, msg, xp) {
+  document.getElementById('xp-cel-emoji').textContent = emoji;
+  document.getElementById('xp-cel-title').textContent = title;
+  document.getElementById('xp-cel-msg').textContent = msg;
+  document.getElementById('xp-cel-sub').textContent = '+' + xp + ' XP earned!';
+  const cel = document.getElementById('xp-celebration');
+  cel.classList.add('show');
+  spawnConfetti();
+}
+function closeXpCelebration() {
+  document.getElementById('xp-celebration').classList.remove('show');
+}
+function spawnConfetti() {
+  const cel = document.getElementById('xp-celebration');
+  for(let i = 0; i < 60; i++) {
+    const c = document.createElement('div');
+    c.className = 'confetti-piece';
+    c.style.cssText = `left:${Math.random()*100}%;top:-10px;background:${CEL_COLORS[Math.floor(Math.random()*CEL_COLORS.length)]};width:${6+Math.random()*8}px;height:${6+Math.random()*8}px;animation-delay:${Math.random()*1.5}s;animation-duration:${2+Math.random()*2}s;border-radius:${Math.random()>0.5?'50%':'2px'};`;
+    cel.appendChild(c);
+    setTimeout(() => c.remove(), 4500);
+  }
+}
+
+// ── PATCH toggleTask to show toasts + celebrations ─────────────────────────
+const _origToggleTask = toggleTask;
+async function toggleTask(id) {
+  const task = TASKS.find(t => t.id === id);
+  const wasDone = !!completions[id];
+  await _origToggleTask(id);
+  if(!wasDone && task) {
+    if(task.boss) {
+      showXpCelebration('🦋', 'Boss Task Complete!', task.t.slice(0,50) + (task.t.length>50?'…':''), task.xp);
+    } else {
+      showToast('✅ Done! +' + task.xp + ' XP 🦋');
+    }
+  } else if(wasDone) {
+    showToast('↩️ Task unchecked');
+  }
+}
+
+// ── RIRI ──────────────────────────────────────────────────────────────────
+const RIRI_SYSTEM = `You are Riri — a warm, creative AI assistant helping Elsie with her bedroom makeover quest.
+
+Personality:
+- Like a cool big sister who has amazing taste in interior design
+- Enthusiastic about colours, lighting, and creative decoration
+- Encouraging and fun — never makes her feel silly for any idea
+- Short punchy answers unless step-by-step help is needed
+- Uses emojis naturally but not excessively
+- Warm and personal — you know Elsie and her project well
+
+The project:
+- Elsie is redesigning her bedroom over the Easter holidays (14 days)
+- The walls are being painted purple
+- She's building a vanity desk (LAGKAPTEN top + ADILS legs + ALEX drawers from IKEA)
+- Getting a cursive LED name sign ("Elsie") above the vanity
+- LED strip lighting around the mirror, under the desk shelf, and on the bookshelf
+- Her sister Emma shares the room and is getting her own corner
+- Parents are doing the building/drilling — Elsie is Chief Designer
+
+Riri can help with:
+- Purple shade recommendations and colour combinations
+- LED lighting colour ideas and modes
+- How to style the vanity and bookshelf
+- Decoration ideas (butterfly theme already in progress)
+- Encouraging Elsie when she's unsure about a decision
+- Ideas for the grand reveal moment
+- Any other creative or design questions`;
+
+let ririOpen = false;
+let ririHistory = [];
+let ririGreeted = false;
+
+function toggleRiri() {
+  ririOpen = !ririOpen;
+  document.getElementById('riri-panel').classList.toggle('open', ririOpen);
+  if(ririOpen && !ririGreeted) {
+    ririGreeted = true;
+    const name = currentUser || 'there';
+    const greeting = name === 'Elsie'
+      ? "Hey Elsie! ✨ I'm Riri — your personal room design assistant! Ask me anything about your makeover — colours, lighting ideas, how to style your vanity, anything! What's on your mind? 🦋"
+      : name === 'Emma'
+      ? "Hey Emma! 🌟 I'm Riri! I'm here to help with the room makeover. Want ideas for your corner, or just curious about something? Ask away!"
+      : "Hey! 👋 I'm Riri — the room makeover AI assistant. Ask me anything about the project — design ideas, colour choices, decoration tips. How can I help?";
+    appendRiriMsg('riri', greeting);
+  }
+}
+
+function appendRiriMsg(role, text) {
+  const el = document.getElementById('riri-messages');
+  const div = document.createElement('div');
+  div.className = 'riri-msg ' + role;
+  div.textContent = text;
+  el.appendChild(div);
+  el.scrollTop = el.scrollHeight;
+  return div;
+}
+
+async function sendRiri() {
+  const inp = document.getElementById('riri-input');
+  const msg = inp.value.trim();
+  if(!msg) return;
+  inp.value = '';
+  document.getElementById('riri-send').disabled = true;
+
+  appendRiriMsg('user', msg);
+  ririHistory.push({ role: 'user', content: msg });
+
+  const thinking = appendRiriMsg('thinking', 'Riri is thinking... ✨');
+
+  try {
+    // Inject live context
+    let system = RIRI_SYSTEM;
+    system += `\n\nCurrent context:`;
+    system += `\n- Talking to: ${currentUser || 'unknown'}`;
+    const doneCount = Object.keys(completions).length;
+    const earned = TASKS.filter(t=>completions[t.id]).reduce((s,t)=>s+t.xp,0);
+    system += `\n- Tasks completed: ${doneCount} / ${TASKS.length}`;
+    system += `\n- XP earned: ${earned} / ${TASKS.reduce((s,t)=>s+t.xp,0)}`;
+
+    const res = await fetch('https://sehkmskmyslpmzsvmgnx.supabase.co/functions/v1/riri', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SUPA_KEY },
+      body: JSON.stringify({ system: system, messages: ririHistory })
+    });
+    const data = await res.json();
+    const reply = data.reply || data.content?.[0]?.text || "Hmm, I couldn't think of anything — try asking me again! 🦋";
+    thinking.remove();
+    appendRiriMsg('riri', reply);
+    ririHistory.push({ role: 'assistant', content: reply });
+    // Keep history to last 10 messages
+    if(ririHistory.length > 10) ririHistory = ririHistory.slice(-10);
+  } catch(e) {
+    thinking.remove();
+    appendRiriMsg('riri', "Oops, something went wrong on my end! Try again in a sec 🦋");
+  }
+
+  document.getElementById('riri-send').disabled = false;
+  document.getElementById('riri-input').focus();
+}
+
+// Allow Enter to send (Shift+Enter for newline)
+document.addEventListener('DOMContentLoaded', () => {
+  const inp = document.getElementById('riri-input');
+  if(inp) inp.addEventListener('keydown', e => {
+    if(e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendRiri(); }
+  });
+});
+
+</script>
 <style>
   :root {
     --p0:#1A0A2E;--p1:#2D1B5E;--p2:#4A2F8A;--p3:#6B46C1;--p4:#9B6FD4;--p5:#C4A8E8;--p6:#E8D8F8;--p7:#F5EFFE;
@@ -312,6 +474,46 @@
     .header-right{min-width:180px;}
     .photo-grid{grid-template-columns:repeat(2,1fr);}
   }
+
+  /* TOAST */
+  .toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--p0);color:white;padding:12px 22px;border-radius:100px;font-weight:800;font-size:14px;z-index:8000;opacity:0;transition:opacity 0.3s,transform 0.3s;pointer-events:none;white-space:nowrap;box-shadow:0 8px 32px rgba(26,10,46,0.4);border:1px solid var(--p3);}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+  /* XP CELEBRATION */
+  .xp-celebration{position:fixed;inset:0;background:rgba(26,10,46,0.92);z-index:9000;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:40px;}
+  .xp-celebration.show{display:flex;}
+  .xp-cel-emoji{font-size:80px;animation:celBounce 0.6s ease infinite alternate;}
+  @keyframes celBounce{0%{transform:scale(1) rotate(-5deg);}100%{transform:scale(1.15) rotate(5deg);}}
+  .xp-cel-title{font-family:'Pacifico',cursive;font-size:36px;color:var(--gold);margin:16px 0 8px;text-shadow:0 0 40px rgba(245,200,66,0.6);}
+  .xp-cel-msg{font-size:18px;font-weight:700;color:white;margin-bottom:8px;}
+  .xp-cel-sub{font-size:14px;font-weight:600;color:var(--lavender);margin-bottom:32px;}
+  .xp-cel-btn{background:var(--gold);color:var(--p0);border:none;border-radius:16px;padding:14px 36px;font-family:'Nunito',sans-serif;font-weight:800;font-size:16px;cursor:pointer;transition:transform 0.1s;}
+  .xp-cel-btn:active{transform:scale(0.97);}
+  .confetti-piece{position:absolute;width:10px;height:10px;border-radius:2px;animation:confettiFall linear forwards;}
+  @keyframes confettiFall{0%{transform:translateY(-20px) rotate(0deg);opacity:1;}100%{transform:translateY(100vh) rotate(720deg);opacity:0;}}
+
+  /* RIRI */
+  .riri-btn{position:fixed;bottom:28px;right:20px;width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,var(--rose),var(--p3));border:none;cursor:pointer;z-index:400;box-shadow:0 4px 24px rgba(190,24,93,0.5);transition:transform 0.2s;font-size:28px;display:flex;align-items:center;justify-content:center;}
+  .riri-btn:hover{transform:scale(1.08);}
+  .riri-label{position:fixed;bottom:92px;right:14px;font-size:10px;font-weight:800;letter-spacing:2px;color:var(--p4);z-index:400;pointer-events:none;}
+  .riri-panel{position:fixed;bottom:0;right:0;width:100%;max-width:420px;height:72vh;background:var(--p0);border-radius:24px 24px 0 0;border:1px solid var(--p2);transform:translateY(100%);transition:transform 0.35s cubic-bezier(.32,1.1,.64,1);z-index:401;display:flex;flex-direction:column;box-shadow:0 -8px 40px rgba(26,10,46,0.5);}
+  .riri-panel.open{transform:translateY(0);}
+  .riri-header{padding:16px 20px 12px;border-bottom:1px solid var(--p2);display:flex;align-items:center;gap:12px;flex-shrink:0;}
+  .riri-avatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--rose),var(--p3));display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+  .riri-name{font-family:'Pacifico',cursive;font-size:18px;color:white;}
+  .riri-status{font-size:11px;color:var(--lavender);font-weight:600;}
+  .riri-close{margin-left:auto;background:rgba(255,255,255,0.1);border:none;color:var(--lavender);width:32px;height:32px;border-radius:50%;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;}
+  .riri-messages{flex:1;overflow-y:auto;padding:16px;display:flex;flex-direction:column;gap:10px;}
+  .riri-msg{max-width:85%;padding:10px 14px;border-radius:16px;font-size:13px;font-weight:600;line-height:1.5;}
+  .riri-msg.riri{background:var(--p2);color:white;border-bottom-left-radius:4px;align-self:flex-start;}
+  .riri-msg.user{background:var(--gold);color:var(--p0);border-bottom-right-radius:4px;align-self:flex-end;}
+  .riri-msg.thinking{background:var(--p2);color:var(--lavender);border-bottom-left-radius:4px;align-self:flex-start;font-style:italic;}
+  .riri-input-row{padding:12px 16px;border-top:1px solid var(--p2);display:flex;gap:8px;flex-shrink:0;}
+  .riri-input{flex:1;background:var(--p1);border:1.5px solid var(--p3);border-radius:12px;padding:10px 14px;font-family:'Nunito',sans-serif;font-size:13px;font-weight:600;color:white;outline:none;resize:none;}
+  .riri-input::placeholder{color:var(--lavender);}
+  .riri-input:focus{border-color:var(--p4);}
+  .riri-send{background:linear-gradient(135deg,var(--rose),var(--p3));color:white;border:none;border-radius:12px;padding:10px 16px;font-family:'Nunito',sans-serif;font-weight:800;font-size:13px;cursor:pointer;white-space:nowrap;}
+  .riri-send:disabled{opacity:0.5;cursor:not-allowed;}
 </style>
 </head>
 <body>
@@ -1112,5 +1314,36 @@ if(currentUser) {
   buildShopping();
 }
 </script>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- XP CELEBRATION -->
+<div class="xp-celebration" id="xp-celebration">
+  <div id="xp-cel-emoji" class="xp-cel-emoji">🦋</div>
+  <div class="xp-cel-title" id="xp-cel-title">Amazing!</div>
+  <div class="xp-cel-msg" id="xp-cel-msg">Boss task complete!</div>
+  <div class="xp-cel-sub" id="xp-cel-sub">+10 XP earned</div>
+  <button class="xp-cel-btn" onclick="closeXpCelebration()">Keep questing! 🦋</button>
+</div>
+
+<!-- RIRI -->
+<div class="riri-label">ASK RIRI</div>
+<button class="riri-btn" id="riri-btn" onclick="toggleRiri()">✨</button>
+<div class="riri-panel" id="riri-panel">
+  <div class="riri-header">
+    <div class="riri-avatar">✨</div>
+    <div>
+      <div class="riri-name">Riri</div>
+      <div class="riri-status">Your room design assistant 🦋</div>
+    </div>
+    <button class="riri-close" onclick="toggleRiri()">✕</button>
+  </div>
+  <div class="riri-messages" id="riri-messages"></div>
+  <div class="riri-input-row">
+    <textarea class="riri-input" id="riri-input" rows="2" placeholder="Ask Riri anything about your room..."></textarea>
+    <button class="riri-send" id="riri-send" onclick="sendRiri()">Send</button>
+  </div>
+</div>
 </body>
 </html>
