@@ -41,22 +41,7 @@ function spawnConfetti() {
   }
 }
 
-// ── PATCH toggleTask to show toasts + celebrations ─────────────────────────
-const _origToggleTask = toggleTask;
-async function toggleTask(id) {
-  const task = TASKS.find(t => t.id === id);
-  const wasDone = !!completions[id];
-  await _origToggleTask(id);
-  if(!wasDone && task) {
-    if(task.boss) {
-      showXpCelebration('🦋', 'Boss Task Complete!', task.t.slice(0,50) + (task.t.length>50?'…':''), task.xp);
-    } else {
-      showToast('✅ Done! +' + task.xp + ' XP 🦋');
-    }
-  } else if(wasDone) {
-    showToast('↩️ Task unchecked');
-  }
-}
+
 
 // ── RIRI ──────────────────────────────────────────────────────────────────
 const RIRI_SYSTEM = `You are Riri — a warm, creative AI assistant helping Elsie with her bedroom makeover quest.
@@ -1000,6 +985,8 @@ async function loadAll() {
 
 async function toggleTask(id) {
   if(!currentUser) return;
+  const task = TASKS.find(t => t.id === id);
+  const wasDone = !!completions[id];
   if(completions[id]) {
     await db.from('task_completions').delete().eq('task_id', id);
     delete completions[id];
@@ -1008,6 +995,15 @@ async function toggleTask(id) {
     if(data) completions[id] = data;
   }
   rebuildAll();
+  if(!wasDone && task) {
+    if(task.boss) {
+      showXpCelebration('🦋', 'Boss Task Complete!', task.t.slice(0,50) + (task.t.length>50?'…':''), task.xp);
+    } else {
+      showToast('✅ Done! +' + task.xp + ' XP 🦋');
+    }
+  } else if(wasDone) {
+    showToast('↩️ Task unchecked');
+  }
 }
 
 async function submitNote(taskId, body) {
