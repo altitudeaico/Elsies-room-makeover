@@ -514,6 +514,36 @@ document.addEventListener('DOMContentLoaded', () => {
   .riri-input:focus{border-color:var(--p4);}
   .riri-send{background:linear-gradient(135deg,var(--rose),var(--p3));color:white;border:none;border-radius:12px;padding:10px 16px;font-family:'Nunito',sans-serif;font-weight:800;font-size:13px;cursor:pointer;white-space:nowrap;}
   .riri-send:disabled{opacity:0.5;cursor:not-allowed;}
+
+  /* BUDGET */
+  .budget-header-card{background:linear-gradient(135deg,var(--p0),var(--p2));border-radius:20px;padding:24px;margin-bottom:20px;border:1px solid var(--p3);}
+  .budget-title-row{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:16px;flex-wrap:wrap;}
+  .budget-label{font-size:11px;font-weight:800;color:var(--lavender);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;}
+  .budget-total{font-family:'Pacifico',cursive;font-size:32px;color:white;}
+  .budget-spent{font-family:'Pacifico',cursive;font-size:28px;color:var(--gold);}
+  .budget-remaining{font-family:'Pacifico',cursive;font-size:28px;color:var(--mint);}
+  .budget-bar-bg{background:rgba(255,255,255,0.15);border-radius:99px;height:12px;overflow:hidden;margin-bottom:6px;}
+  .budget-bar-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--gold),#FFB347);transition:width 0.6s cubic-bezier(.34,1.56,.64,1);}
+  .budget-bar-fill.over{background:linear-gradient(90deg,#FF6B6B,#FF4444);}
+  .budget-bar-label{font-size:12px;font-weight:700;color:var(--lavender);}
+  .budget-cat{background:white;border-radius:16px;border:1.5px solid var(--border);margin-bottom:14px;overflow:hidden;}
+  .budget-cat-header{padding:12px 16px;display:flex;align-items:center;justify-content:space-between;background:var(--p7);border-bottom:1px solid var(--border);}
+  .budget-cat-name{font-weight:800;font-size:14px;color:var(--p2);}
+  .budget-cat-total{font-weight:800;font-size:14px;color:var(--p3);}
+  .budget-item{padding:10px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--p7);gap:12px;}
+  .budget-item:last-child{border-bottom:none;}
+  .budget-item-desc{font-size:13px;font-weight:600;flex:1;}
+  .budget-item-note{font-size:11px;color:var(--text-soft);font-weight:600;}
+  .budget-item-amount{font-size:14px;font-weight:800;color:var(--p2);white-space:nowrap;}
+  .budget-item-delete{background:none;border:none;color:var(--border);cursor:pointer;font-size:14px;padding:2px 6px;border-radius:6px;transition:color 0.15s;}
+  .budget-item-delete:hover{color:var(--rose);}
+  .add-expense-card{background:white;border-radius:16px;border:1.5px solid var(--border);padding:16px;}
+  .expense-form-row{display:flex;gap:8px;margin-bottom:10px;}
+  .expense-form-row:last-child{margin-bottom:0;}
+  .expense-input{flex:1;padding:9px 12px;border-radius:10px;border:1.5px solid var(--border);font-family:'Nunito',sans-serif;font-size:13px;font-weight:600;outline:none;background:var(--bg);}
+  .expense-input:focus{border-color:var(--p4);}
+  .expense-add-btn{background:var(--p3);color:white;border:none;border-radius:10px;padding:9px 18px;font-family:'Nunito',sans-serif;font-weight:800;font-size:13px;cursor:pointer;white-space:nowrap;transition:background 0.15s;}
+  .expense-add-btn:hover{background:var(--p2);}
 </style>
 </head>
 <body>
@@ -587,6 +617,7 @@ document.addEventListener('DOMContentLoaded', () => {
   <button class="tab-btn" onclick="showTab('guides',this)">📖 Guides</button>
   <button class="tab-btn" onclick="showTab('shopping',this)">🛒 Shopping</button>
   <button class="tab-btn" onclick="showTab('crew',this)">👥 The Crew</button>
+  <button class="tab-btn" id="budget-tab-btn" onclick="showTab('budget',this)" style="display:none">💷 Budget</button>
 </nav>
 
 <div class="main">
@@ -723,6 +754,53 @@ document.addEventListener('DOMContentLoaded', () => {
     </div>
   </div>
 
+
+  <!-- BUDGET (Parents only) -->
+  <div class="panel" id="panel-budget">
+    <div class="budget-header-card">
+      <div class="budget-title-row">
+        <div>
+          <div class="budget-label">Total Project Budget</div>
+          <div class="budget-total">£500</div>
+        </div>
+        <div style="text-align:right">
+          <div class="budget-label">Spent so far</div>
+          <div class="budget-spent" id="b-spent">£0</div>
+        </div>
+        <div style="text-align:right">
+          <div class="budget-label">Remaining</div>
+          <div class="budget-remaining" id="b-remaining">£500</div>
+        </div>
+      </div>
+      <div class="budget-bar-bg">
+        <div class="budget-bar-fill" id="b-bar" style="width:0%"></div>
+      </div>
+      <div class="budget-bar-label" id="b-bar-label">0% of budget used</div>
+    </div>
+
+    <div class="section-title">🛒 Purchases</div>
+
+    <div id="budget-categories"></div>
+
+    <div class="section-title">➕ Add Expense</div>
+    <div class="add-expense-card">
+      <div class="expense-form-row">
+        <input class="expense-input" id="exp-desc" placeholder="Description" />
+        <input class="expense-input" id="exp-amount" placeholder="£0.00" type="number" min="0" step="0.01" style="max-width:100px" />
+      </div>
+      <div class="expense-form-row">
+        <select class="expense-input" id="exp-cat">
+          <option value="IKEA">🪑 IKEA</option>
+          <option value="Paint & Decorating">🎨 Paint & Decorating</option>
+          <option value="Tools & Materials">🔧 Tools & Materials</option>
+          <option value="Lighting">💡 Lighting</option>
+          <option value="Accessories">🦋 Accessories</option>
+          <option value="Other">📦 Other</option>
+        </select>
+        <button class="expense-add-btn" onclick="addExpense()">Add</button>
+      </div>
+    </div>
+  </div>
 </div><!-- /main -->
 
 <script>
@@ -740,7 +818,8 @@ function setIdentity(name) {
   localStorage.setItem('eq_user', name);
   document.getElementById('id-overlay').style.display = 'none';
   document.getElementById('identity-pill').textContent = 
-    name === 'Elsie' ? '👑 Elsie' : name === 'Parents' ? '🔧 Parents' : '🌟 Emma';
+    name === 'Elsie' ? '👑 Elsie' : name === 'Parents' ? '🔧 The Grown-Up Crew' : '🌟 Emma';
+  updateBudgetVisibility();
   init();
 }
 
@@ -753,7 +832,8 @@ function changeIdentity() {
 if (currentUser) {
   document.getElementById('id-overlay').style.display = 'none';
   document.getElementById('identity-pill').textContent = 
-    currentUser === 'Elsie' ? '👑 Elsie' : currentUser === 'Parents' ? '🔧 Parents' : '🌟 Emma';
+    currentUser === 'Elsie' ? '👑 Elsie' : currentUser === 'Parents' ? '🔧 The Grown-Up Crew' : '🌟 Emma';
+  updateBudgetVisibility();
 }
 
 // ── DATA ──────────────────────────────────────────────────────────────────
@@ -1304,12 +1384,110 @@ function buildFloatingButterflies(){
   }
 }
 
+
+// ── BUDGET ────────────────────────────────────────────────────────────────
+const BUDGET_TOTAL = 500;
+const CAT_ICONS = {
+  'IKEA':'🪑','Paint & Decorating':'🎨','Tools & Materials':'🔧',
+  'Lighting':'💡','Accessories':'🦋','Other':'📦'
+};
+
+const DEFAULT_EXPENSES = [
+  {id:'e1', desc:'LAGKAPTEN tabletop 120x60', amount:20.00, cat:'IKEA', note:'22 Feb — IKEA Lakeside'},
+  {id:'e2', desc:'ADILS legs x2', amount:5.00, cat:'IKEA', note:'22 Feb — IKEA Lakeside'},
+  {id:'e3', desc:'ALEX drawer unit 36x70', amount:70.00, cat:'IKEA', note:'22 Feb — IKEA Lakeside'},
+  {id:'e4', desc:'SUNDVIK children's table', amount:45.00, cat:'IKEA', note:'22 Feb — IKEA Lakeside'},
+  {id:'e5', desc:'SUNDVIK children's chair', amount:22.00, cat:'IKEA', note:'22 Feb — IKEA Lakeside'},
+  {id:'e6', desc:'B&Q supplies', amount:100.00, cat:'Paint & Decorating', note:'Paint, filler, tape, tools'},
+];
+
+let expenses = [];
+try {
+  const saved = localStorage.getItem('eq_expenses');
+  expenses = saved ? JSON.parse(saved) : JSON.parse(JSON.stringify(DEFAULT_EXPENSES));
+} catch(e) { expenses = JSON.parse(JSON.stringify(DEFAULT_EXPENSES)); }
+if(!expenses.length) expenses = JSON.parse(JSON.stringify(DEFAULT_EXPENSES));
+
+function saveExpenses() {
+  localStorage.setItem('eq_expenses', JSON.stringify(expenses));
+}
+
+function buildBudget() {
+  const total = expenses.reduce((s,e) => s + e.amount, 0);
+  const remaining = BUDGET_TOTAL - total;
+  const pct = Math.min(Math.round(total / BUDGET_TOTAL * 100), 100);
+
+  document.getElementById('b-spent').textContent = '£' + total.toFixed(2);
+  document.getElementById('b-remaining').textContent = (remaining >= 0 ? '£' : '-£') + Math.abs(remaining).toFixed(2);
+  const bar = document.getElementById('b-bar');
+  bar.style.width = pct + '%';
+  bar.className = 'budget-bar-fill' + (remaining < 0 ? ' over' : '');
+  document.getElementById('b-bar-label').textContent = pct + '% of budget used · £' + total.toFixed(2) + ' of £' + BUDGET_TOTAL;
+
+  // Group by category
+  const cats = {};
+  expenses.forEach(e => {
+    if(!cats[e.cat]) cats[e.cat] = [];
+    cats[e.cat].push(e);
+  });
+
+  const el = document.getElementById('budget-categories');
+  el.innerHTML = Object.entries(cats).map(([cat, items]) => {
+    const catTotal = items.reduce((s,i) => s+i.amount, 0);
+    const icon = CAT_ICONS[cat] || '📦';
+    return `<div class="budget-cat">
+      <div class="budget-cat-header">
+        <div class="budget-cat-name">${icon} ${cat}</div>
+        <div class="budget-cat-total">£${catTotal.toFixed(2)}</div>
+      </div>
+      ${items.map(item => `<div class="budget-item">
+        <div>
+          <div class="budget-item-desc">${item.desc}</div>
+          ${item.note ? `<div class="budget-item-note">${item.note}</div>` : ''}
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="budget-item-amount">£${item.amount.toFixed(2)}</div>
+          <button class="budget-item-delete" onclick="deleteExpense('${item.id}')" title="Remove">✕</button>
+        </div>
+      </div>`).join('')}
+    </div>`;
+  }).join('');
+}
+
+function addExpense() {
+  const desc = document.getElementById('exp-desc').value.trim();
+  const amount = parseFloat(document.getElementById('exp-amount').value);
+  const cat = document.getElementById('exp-cat').value;
+  if(!desc || isNaN(amount) || amount <= 0) { showToast('⚠️ Fill in description and amount'); return; }
+  expenses.push({ id: 'e'+Date.now(), desc, amount, cat, note:'' });
+  saveExpenses();
+  buildBudget();
+  document.getElementById('exp-desc').value = '';
+  document.getElementById('exp-amount').value = '';
+  showToast('✅ Expense added — £' + amount.toFixed(2));
+}
+
+function deleteExpense(id) {
+  expenses = expenses.filter(e => e.id !== id);
+  saveExpenses();
+  buildBudget();
+  showToast('🗑️ Expense removed');
+}
+
+// Show budget tab only for Parents
+function updateBudgetVisibility() {
+  const btn = document.getElementById('budget-tab-btn');
+  if(btn) btn.style.display = currentUser === 'Parents' ? '' : 'none';
+}
+
 // ── INIT ──────────────────────────────────────────────────────────────────
 function init() {
   buildHeaderButterflies();
   buildFloatingButterflies();
   buildGuides();
   buildShopping();
+  buildBudget();
+  updateBudgetVisibility();
   loadAll().then(() => subscribeRealtime());
 }
 
