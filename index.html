@@ -482,8 +482,8 @@ document.addEventListener('DOMContentLoaded', () => {
   .riri-btn{position:fixed;bottom:28px;right:20px;width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,var(--rose),var(--p3));border:none;cursor:pointer;z-index:400;box-shadow:0 4px 24px rgba(190,24,93,0.5);transition:transform 0.2s;font-size:28px;display:flex;align-items:center;justify-content:center;}
   .riri-btn:hover{transform:scale(1.08);}
   .riri-label{position:fixed;bottom:92px;right:14px;font-size:10px;font-weight:800;letter-spacing:2px;color:var(--p4);z-index:400;pointer-events:none;}
-  .riri-panel{position:fixed;bottom:0;right:0;width:100%;max-width:420px;height:72vh;background:var(--p0);border-radius:24px 24px 0 0;border:1px solid var(--p2);transform:translateY(100%);transition:transform 0.35s cubic-bezier(.32,1.1,.64,1);z-index:401;display:flex;flex-direction:column;box-shadow:0 -8px 40px rgba(26,10,46,0.5);}
-  .riri-panel.open{transform:translateY(0);}
+  .riri-panel{position:fixed;bottom:0;right:0;width:100%;max-width:420px;height:72vh;background:var(--p0);border-radius:24px 24px 0 0;border:1px solid var(--p2);transform:translateY(100%);transition:transform 0.35s cubic-bezier(.32,1.1,.64,1);z-index:401;display:none;flex-direction:column;box-shadow:0 -8px 40px rgba(26,10,46,0.5);}
+  .riri-panel.open{display:flex;transform:translateY(0);}
   .riri-header{padding:16px 20px 12px;border-bottom:1px solid var(--p2);display:flex;align-items:center;gap:12px;flex-shrink:0;}
   .riri-avatar{width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,var(--rose),var(--p3));display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
   .riri-name{font-family:'Pacifico',cursive;font-size:18px;color:white;}
@@ -992,7 +992,7 @@ async function toggleTask(id) {
     await db.from('task_completions').delete().eq('task_id', id);
     delete completions[id];
   } else {
-    const {data} = await db.from('task_completions').insert({task_id:id,completed_by:currentUser}).select().single();
+    const {data} = await db.from('task_completions').insert({task_id:id,completed_by:currentUser}).select().maybeSingle();
     if(data) completions[id] = data;
   }
   rebuildAll();
@@ -1009,7 +1009,7 @@ async function toggleTask(id) {
 
 async function submitNote(taskId, body) {
   if(!body.trim()||!currentUser) return;
-  const {data} = await db.from('notes').insert({task_id:taskId,author:currentUser,body:body.trim()}).select().single();
+  const {data} = await db.from('notes').insert({task_id:taskId,author:currentUser,body:body.trim()}).select().maybeSingle();
   if(data) {
     if(!allNotes[taskId]) allNotes[taskId] = [];
     allNotes[taskId].push(data);
@@ -1023,7 +1023,7 @@ async function uploadPhoto(taskId, file, caption) {
   const path = `${taskId}/${Date.now()}.${ext}`;
   const {error:upErr} = await db.storage.from('progress-photos').upload(path, file);
   if(upErr) { alert('Upload failed: '+upErr.message); return; }
-  const {data} = await db.from('photos').insert({task_id:taskId,uploaded_by:currentUser,caption:caption||'',storage_path:path}).select().single();
+  const {data} = await db.from('photos').insert({task_id:taskId,uploaded_by:currentUser,caption:caption||'',storage_path:path}).select().maybeSingle();
   if(data) {
     if(!allPhotos[taskId]) allPhotos[taskId] = [];
     allPhotos[taskId].unshift(data);
@@ -1393,8 +1393,8 @@ const DEFAULT_EXPENSES = [
   {id:'e1', desc:'LAGKAPTEN tabletop 120x60', amount:20.00, cat:'IKEA', note:'22 Feb — IKEA Lakeside'},
   {id:'e2', desc:'ADILS legs x2', amount:5.00, cat:'IKEA', note:'22 Feb — IKEA Lakeside'},
   {id:'e3', desc:'ALEX drawer unit 36x70', amount:70.00, cat:'IKEA', note:'22 Feb — IKEA Lakeside'},
-  {id:'e4', desc:'SUNDVIK children's table', amount:45.00, cat:'IKEA', note:'22 Feb — IKEA Lakeside'},
-  {id:'e5', desc:'SUNDVIK children's chair', amount:22.00, cat:'IKEA', note:'22 Feb — IKEA Lakeside'},
+  {id:'e4', desc:'SUNDVIK table (Emma)', amount:45.00, cat:'IKEA', note:'22 Feb — IKEA Lakeside'},
+  {id:'e5', desc:'SUNDVIK chair (Emma)', amount:22.00, cat:'IKEA', note:'22 Feb — IKEA Lakeside'},
   {id:'e6', desc:'B&Q supplies', amount:100.00, cat:'Paint & Decorating', note:'Paint, filler, tape, tools'},
 ];
 
