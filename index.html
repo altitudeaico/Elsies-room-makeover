@@ -538,6 +538,14 @@ document.addEventListener('DOMContentLoaded', () => {
   .expense-input:focus{border-color:var(--p4);}
   .expense-add-btn{background:var(--p3);color:white;border:none;border-radius:10px;padding:9px 18px;font-family:'Nunito',sans-serif;font-weight:800;font-size:13px;cursor:pointer;white-space:nowrap;transition:background 0.15s;}
   .expense-add-btn:hover{background:var(--p2);}
+
+  /* REMINDERS */
+  .reminder-banner{position:fixed;top:0;left:0;right:0;z-index:7000;background:linear-gradient(135deg,var(--p1),var(--p2));padding:14px 20px;display:flex;align-items:center;gap:12px;transform:translateY(-100%);transition:transform 0.4s cubic-bezier(.32,1.1,.64,1);box-shadow:0 4px 20px rgba(26,10,46,0.4);}
+  .reminder-banner.show{transform:translateY(0);}
+  .reminder-icon{font-size:22px;flex-shrink:0;}
+  .reminder-text{flex:1;font-size:13px;font-weight:700;color:white;line-height:1.4;}
+  .reminder-dismiss{background:rgba(255,255,255,0.15);border:none;color:white;width:28px;height:28px;border-radius:50%;cursor:pointer;font-size:14px;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+  .reminder-dismiss:hover{background:rgba(255,255,255,0.25);}
 </style>
 </head>
 <body>
@@ -1510,6 +1518,68 @@ if ('serviceWorker' in navigator) {
   });
 }
 
+
+// ── IN-APP REMINDERS ──────────────────────────────────────────────────────
+const REMINDERS = [
+  { hour: 9,  minute: 0,  msg: "🦋 Good morning! Don't forget today's quest briefing with Elsie!" },
+  { hour: 10, minute: 0,  msg: "📸 Remember to take progress photos as you go today!" },
+  { hour: 14, minute: 0,  msg: "⚡ Afternoon check-in — how are today's tasks going?" },
+  { hour: 18, minute: 0,  msg: "🌙 End of day — tick off what's done and leave a note for tomorrow!" },
+];
+
+let _lastReminderKey = '';
+
+function startReminders() {
+  // Check every minute
+  setInterval(() => {
+    if(!currentUser) return;
+    const now = new Date();
+    const h = now.getHours();
+    const m = now.getMinutes();
+    const key = `${h}:${m}`;
+    if(key === _lastReminderKey) return; // already shown this minute
+    const reminder = REMINDERS.find(r => r.hour === h && r.minute === m);
+    if(reminder) {
+      _lastReminderKey = key;
+      showReminder(reminder.msg);
+    }
+  }, 30000); // check every 30 seconds
+
+  // Also show a welcome reminder on first open of the day
+  checkDailyWelcome();
+}
+
+function checkDailyWelcome() {
+  if(!currentUser) return;
+  const today = new Date().toDateString();
+  const lastWelcome = localStorage.getItem('eq_last_welcome');
+  if(lastWelcome === today) return;
+  localStorage.setItem('eq_last_welcome', today);
+
+  const hour = new Date().getHours();
+  const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+  const name = currentUser === 'Elsie' ? 'Elsie' : currentUser === 'Emma' ? 'Emma' : 'Team';
+
+  setTimeout(() => {
+    showReminder(`${greeting} ${name}! 🦋 Ready to work on the room today?`);
+  }, 2000);
+}
+
+function showReminder(msg) {
+  // Show as a special reminder toast — slightly different style to regular toasts
+  const el = document.getElementById('reminder-banner');
+  if(!el) return;
+  document.getElementById('reminder-text').textContent = msg;
+  el.classList.add('show');
+  // Auto dismiss after 8 seconds
+  clearTimeout(el._timer);
+  el._timer = setTimeout(() => el.classList.remove('show'), 8000);
+}
+
+function dismissReminder() {
+  document.getElementById('reminder-banner').classList.remove('show');
+}
+
 // ── INIT ──────────────────────────────────────────────────────────────────
 function init() {
   buildHeaderButterflies();
@@ -1519,6 +1589,7 @@ function init() {
   buildBudget();
   updateBudgetVisibility();
   loadAll().then(() => subscribeRealtime());
+  startReminders();
 }
 
 if(currentUser) {
@@ -1560,6 +1631,13 @@ if(currentUser) {
     <textarea class="riri-input" id="riri-input" rows="2" placeholder="Ask Riri anything about your room..."></textarea>
     <button class="riri-send" id="riri-send" onclick="sendRiri()">Send</button>
   </div>
+</div>
+
+<!-- REMINDER BANNER -->
+<div class="reminder-banner" id="reminder-banner">
+  <div class="reminder-icon">🦋</div>
+  <div class="reminder-text" id="reminder-text"></div>
+  <button class="reminder-dismiss" onclick="dismissReminder()">✕</button>
 </div>
 </body>
 </html>
