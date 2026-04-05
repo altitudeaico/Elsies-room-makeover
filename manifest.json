@@ -1,6 +1,6 @@
 {
-  "name": "Elsie's Room Quest",
-  "short_name": "Quest HQ",
+  "name": "Elsie's Room Makeover",
+  "short_name": "Room Makeover",
   "description": "Elsie's Easter Room Makeover Quest HQ",
   "start_url": "/Elsies-room-makeover/",
   "display": "standalone",
